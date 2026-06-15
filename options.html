@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>AI 网页选择助手 - 设置中心</title>
+  <link rel="stylesheet" href="options.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container animate-fade-in">
+    <!-- Sidebar / Header -->
+    <header class="header">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" class="logo-icon">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        <div class="logo-text">
+          <h1>AI 网页选择助手</h1>
+          <p>选中即问答 · 智能快捷解析</p>
+        </div>
+      </div>
+      <div class="version">Version 1.0.0</div>
+    </header>
+
+    <div class="dashboard-layout">
+      <!-- Settings Panel -->
+      <main class="main-settings">
+        <div class="card">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" class="card-icon"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <h2>接口预设与协议设置</h2>
+          </div>
+          <div class="card-body">
+            <!-- Config Presets -->
+            <div class="form-group">
+              <label for="preset-select">快速切换配置预设 (Presets)</label>
+              <div class="preset-wrapper" style="display: flex; gap: 8px;">
+                <select id="preset-select" style="flex: 1; height: 38px;">
+                  <option value="">-- 选择或载入预设 --</option>
+                </select>
+                <button type="button" id="btn-add-preset" class="btn btn-secondary" style="padding: 0 16px; font-size: 13px; height: 38px; white-space: nowrap; border-color: var(--primary-color); color: var(--primary-color);">添加预设</button>
+                <button type="button" id="btn-delete-preset" class="btn btn-secondary" style="padding: 0 16px; font-size: 13px; height: 38px; white-space: nowrap; display: none; color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">删除</button>
+              </div>
+            </div>
+
+            <!-- API Key Input -->
+            <div class="form-group">
+              <label for="api-key">API 密钥 (API Key)</label>
+              <div class="input-password-wrapper">
+                <input type="password" id="api-key" placeholder="输入您申请的 API Key">
+                <button type="button" id="toggle-key-visibility" class="btn-toggle-visibility">
+                  <svg viewBox="0 0 24 24" id="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </div>
+              <p class="field-desc" id="key-help-text">Gemini API Key 可在 Google AI Studio 免费申请。</p>
+            </div>
+
+            <!-- Provider Selector (API Protocol Type) -->
+            <div class="form-group">
+              <label for="provider">接口协议类型 (API Protocol)</label>
+              <select id="provider" name="provider">
+                <option value="openai">OpenAI 协议 (通用/中转/DeepSeek)</option>
+                <option value="gemini">Gemini 协议 (谷歌官方)</option>
+                <option value="anthropic">Anthropic 协议 (克劳德官方)</option>
+                <option value="mock">Mock 模拟协议 (免 Key 测试)</option>
+              </select>
+              <p class="field-desc">指示插件底层以何种协议封装数据（DeepSeek 或中转也选择 OpenAI 协议，模型名含 deepseek 会自动附带禁用 thinking 参数）。</p>
+            </div>
+
+            <!-- Endpoint Input -->
+            <div class="form-group" id="endpoint-group">
+              <label for="endpoint">接口地址 (Base URL / Endpoint)</label>
+              <input type="text" id="endpoint" placeholder="https://api.openai.com/v1">
+              <p class="field-desc">对应的 API 服务基址，末尾不需要带 /chat/completions。</p>
+            </div>
+
+            <!-- Model Input -->
+            <div class="form-group">
+              <label for="model">模型名称 (Model Name)</label>
+              <div class="model-input-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="model" placeholder="例如: deepseek-ai/DeepSeek-V4-Flash" style="flex: 1;">
+                  <button type="button" id="btn-fetch-models" class="btn btn-secondary" style="padding: 0 16px; font-size: 13px; height: 38px; white-space: nowrap;">拉取模型列表</button>
+                </div>
+                <select id="model-select" style="display: none;">
+                  <option value="">-- 选择已拉取的模型 --</option>
+                </select>
+              </div>
+              <p class="field-desc">选择或直接输入所需的模型代号。点击右侧按钮可自动从服务商获取您的可用模型列表。</p>
+            </div>
+
+            <!-- Enable Thinking Toggle -->
+            <div class="form-group checkbox-group" style="margin-top: 16px;">
+              <label class="toggle-switch">
+                <input type="checkbox" id="enable-thinking">
+                <span class="slider"></span>
+                <span class="toggle-label">启用深度思考 (Thinking Mode)</span>
+              </label>
+              <p class="field-desc">开启后将显示并使用大模型的推理思考过程（仅在支持深度思考的模型中生效，如 DeepSeek R1）。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" class="card-icon"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <h2>个性化配置</h2>
+          </div>
+          <div class="card-body">
+            <!-- System Prompt -->
+            <div class="form-group">
+              <label for="system-prompt">系统提示词 (System Prompt)</label>
+              <textarea id="system-prompt" rows="4" placeholder="设置 AI 的预设身份和返回格式..."></textarea>
+              <p class="field-desc">建议规定 AI 回答的风格、语言和排版结构，如：直接给出选择题答案。</p>
+            </div>
+
+            <div class="form-row">
+              <!-- Theme Selector -->
+              <div class="form-group theme-select-group">
+                <label for="theme">显示主题</label>
+                <select id="theme">
+                  <option value="auto">跟随系统 (Auto)</option>
+                  <option value="light">浅色模式 (Light)</option>
+                  <option value="dark">深色模式 (Dark)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Font Style & Keyboard Shortcut Configuration -->
+            <div style="margin-top: 16px; border-top: 1px dashed var(--border-color); padding-top: 16px;">
+              <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-title);">字体与样式配置</h3>
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                <!-- Font Color -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="font-color">悬浮字颜色</label>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="color" id="font-color" value="#000000" style="width: 40px; height: 38px; padding: 0; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;">
+                    <input type="text" id="font-color-hex" value="#000000" style="flex: 1; text-transform: uppercase; font-family: monospace; height: 38px;" placeholder="#000000">
+                  </div>
+                </div>
+
+                <!-- Font Size -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="font-size">字体大小 (px)</label>
+                  <input type="number" id="font-size" min="1" value="15" style="height: 38px;">
+                </div>
+
+                <!-- Font Weight -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="font-weight">字体粗细 (Weight)</label>
+                  <select id="font-weight" style="height: 38px;">
+                    <option value="300">300 (偏细)</option>
+                    <option value="400" selected>400 (常规)</option>
+                    <option value="500">500 (中等)</option>
+                    <option value="600">600 (偏粗)</option>
+                    <option value="700">700 (粗体)</option>
+                  </select>
+                </div>
+
+                <!-- Font Opacity -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="font-opacity">文字不透明度</label>
+                  <div style="display: flex; align-items: center; gap: 8px; height: 38px;">
+                    <input type="range" id="font-opacity" min="10" max="100" value="100" style="flex: 1; height: 6px; cursor: pointer; accent-color: var(--primary-color);">
+                    <span id="font-opacity-val" style="font-size: 13px; min-width: 36px; text-align: right; font-family: monospace;">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Shortcut Config -->
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="custom-shortcut">网页内自定义快捷键 (Page Shortcut)</label>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <input type="text" id="custom-shortcut" readonly placeholder="点击后在键盘上按下组合键以录制，如 Alt+Q" style="flex: 1; cursor: pointer; caret-color: transparent; background-color: var(--bg-app); font-weight: 500; text-align: center; height: 38px;" class="shortcut-input">
+                  <button type="button" id="btn-clear-shortcut" class="btn btn-secondary" style="padding: 0 16px; height: 38px; white-space: nowrap;">清除</button>
+                </div>
+                <p class="field-desc">在网页中选中文本后，按下该快捷键组合可立即运行 AI 解析。系统全局快捷键可前往 <a href="#" id="link-chrome-shortcuts" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">chrome://extensions/shortcuts</a> 配置。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-wrapper">
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+            <button type="button" id="btn-test" class="btn btn-secondary">
+              <svg viewBox="0 0 24 24" class="btn-icon"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              测试连接 (Test API)
+            </button>
+            <span style="font-size: 11px; color: var(--text-muted);">测试的是当前表单中的配置（非已保存配置）</span>
+          </div>
+          <button type="button" id="btn-save" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" class="btn-icon"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            保存配置 (Save Settings)
+          </button>
+        </div>
+
+        <!-- Connection Test Result (collapsible/expandable inline) -->
+        <div id="test-result" class="card result-card hidden animate-fade-in">
+          <div class="card-header">
+            <span class="status-indicator" id="test-status-indicator"></span>
+            <h3 id="test-result-title">测试结果</h3>
+          </div>
+          <div class="card-body">
+            <div id="test-result-content"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Help / Instructions Panel -->
+      <aside class="sidebar-help">
+        <div class="card help-card">
+          <div class="card-header">
+            <h2>使用说明</h2>
+          </div>
+          <div class="card-body">
+            <ol class="help-steps">
+              <li>
+                <div class="step-num">1</div>
+                <div class="step-desc">
+                  <strong>配置密钥</strong>
+                  <p>在此页面选择您要使用的 AI 平台，填入对应的 API Key 并保存。</p>
+                </div>
+              </li>
+              <li>
+                <div class="step-num">2</div>
+                <div class="step-desc">
+                  <strong>选中网页文本</strong>
+                  <p>在任意网页中，用鼠标拖动选中需要解析的文字或选择题。</p>
+                </div>
+              </li>
+              <li>
+                <div class="step-num">3</div>
+                <div class="step-desc">
+                  <strong>获取答案</strong>
+                  <p>点击文本旁出现的 <strong>AI 悬浮图标</strong>，或<strong>右键点击</strong>选择菜单中的 <strong>"使用 AI 解析"</strong>。</p>
+                </div>
+              </li>
+              <li>
+                <div class="step-num">4</div>
+                <div class="step-desc">
+                  <strong>阅读答案</strong>
+                  <p>答案会直接在当前网页中以流式文字弹窗形式呈现，支持拖动、折叠和一键复制。</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="card info-card">
+          <div class="card-header">
+            <h2>常见服务商推荐</h2>
+          </div>
+          <div class="card-body">
+            <div class="provider-guide">
+              <h4>1. Gemini (推荐)</h4>
+              <p>官方提供免费额度，响应极快，非常适合查题与辅助阅读。</p>
+              <h4>2. DeepSeek Chat</h4>
+              <p>国内大火大模型，性价比较高，且中文理解和推理能力极强。</p>
+              <h4>3. OpenAI / Custom</h4>
+              <p>如需使用中转接口，可选择 OpenAI 或 Custom，填写您的中转 API Base URL 即可。</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Toast Toast Container -->
+  <div id="toast" class="toast">配置已成功保存！</div>
+  <script src="options.js"></script>
+</body>
+</html>

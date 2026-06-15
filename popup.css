@@ -1,0 +1,240 @@
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #a855f7;
+  --bg-color: #ffffff;
+  --bg-app: #f9fafb;
+  --border-color: #e5e7eb;
+  --text-title: #111827;
+  --text-body: #374151;
+  --text-muted: #6b7280;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #1e293b;
+    --bg-app: #0f172a;
+    --border-color: #334155;
+    --text-title: #f9fafb;
+    --text-body: #e2e8f0;
+    --text-muted: #94a3b8;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 290px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-body);
+  padding: 16px;
+}
+
+.popup-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Header */
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.popup-logo {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: var(--primary-color);
+  stroke-width: 2;
+}
+
+.popup-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-title);
+}
+
+/* Main */
+.popup-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Status Card */
+.status-card {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+}
+
+.status-label {
+  color: var(--text-muted);
+}
+
+.status-value {
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.status-indicator-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+  display: inline-block;
+}
+
+.status-dot.success {
+  background-color: var(--success-color);
+  box-shadow: 0 0 6px var(--success-color);
+}
+
+.status-dot.error {
+  background-color: var(--error-color);
+  box-shadow: 0 0 6px var(--error-color);
+  animation: pulse 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+
+.status-text {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Tips */
+.tips-box {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.tips-box h4 {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 6px;
+}
+
+.tips-box ul {
+  list-style: none;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tips-box li {
+  position: relative;
+  padding-left: 14px;
+}
+
+.tips-box li::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* Settings Button */
+.btn-settings {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(99, 102, 241, 0.15);
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+.btn-settings:hover {
+  opacity: 0.95;
+}
+
+.btn-settings:active {
+  transform: scale(0.98);
+}
+
+.btn-icon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Preset switch style in popup */
+.preset-switch-card {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preset-switch-card label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.preset-switch-card select {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-body);
+  font-size: 13.5px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.preset-switch-card select:focus {
+  border-color: var(--primary-color);
+}

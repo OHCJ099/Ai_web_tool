@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>AI 网页选择助手</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <svg viewBox="0 0 24 24" class="popup-logo">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      <h3>AI 网页选择助手</h3>
+    </header>
+
+    <main class="popup-main">
+      <!-- Status Card -->
+      <div class="status-card" id="status-card">
+        <div class="status-header">
+          <span class="status-label">当前服务商:</span>
+          <span class="status-value" id="current-provider">未配置</span>
+        </div>
+        <div class="status-indicator-wrapper">
+          <span class="status-dot" id="status-dot"></span>
+          <span class="status-text" id="status-desc">检查配置中...</span>
+        </div>
+      </div>
+
+      <!-- Quick Preset Selection -->
+      <div class="preset-switch-card">
+        <label for="popup-preset-select">切换配置预设 (Presets)</label>
+        <select id="popup-preset-select">
+          <option value="">-- 选择或载入预设 --</option>
+        </select>
+      </div>
+
+      <!-- Quick Tips -->
+      <div class="tips-box">
+        <h4>快速使用说明：</h4>
+        <ul>
+          <li>在网页上用鼠标<strong>选中一段文字</strong>；</li>
+          <li>点击文字旁弹出的 <strong>AI 气泡按钮</strong>；</li>
+          <li>或者<strong>右键点击</strong>选择<strong>“使用 AI 解析”</strong>；</li>
+          <li>答案将直接在当前网页中飘窗显示。</li>
+        </ul>
+      </div>
+
+      <!-- Actions -->
+      <button class="btn-settings" id="btn-open-options">
+        <svg viewBox="0 0 24 24" class="btn-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        进入设置中心
+      </button>
+    </main>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
