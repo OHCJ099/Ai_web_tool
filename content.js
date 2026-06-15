@@ -45,7 +45,7 @@
       fontSize: "15",
       fontWeight: "400",
       fontOpacity: "100",
-      customShortcut: "",
+      customShortcut: "Alt+Z",
       enableSuperCopy: false
     }, (settings) => {
       config = settings;
@@ -457,6 +457,7 @@
 
   // Show Panel
   function showPanel(queryText, x, y) {
+    if (!answerPanel) return;
     applyTheme();
     applyFontSettings();
     codeBlocksCache = []; // Reset code cache
@@ -501,7 +502,7 @@
 
   // Close Panel
   function closePanel() {
-    answerPanel.style.display = "none";
+    if (answerPanel) answerPanel.style.display = "none";
     isStreaming = false;
     // Disconnect port if still streaming
     if (activePort) {

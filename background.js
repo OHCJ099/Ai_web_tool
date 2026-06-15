@@ -13,7 +13,7 @@ const DEFAULTS = {
   fontSize: "15",
   fontWeight: "400",
   fontOpacity: "100",
-  customShortcut: "",
+  customShortcut: "Alt+Z",
   enableSuperCopy: false
 };
 

@@ -13,7 +13,7 @@ const DEFAULTS = {
   fontSize: "15",
   fontWeight: "400",
   fontOpacity: "100",
-  customShortcut: "",
+  customShortcut: "Alt+Z",
   enableSuperCopy: false
 };
 
@@ -59,7 +59,7 @@ const INITIAL_PRESETS = {
     fontSize: "15",
     fontWeight: "400",
     fontOpacity: "100",
-    customShortcut: ""
+    customShortcut: "Alt+Z"
   }
 };
 
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let currentFontSize = settings.fontSize || "15";
       let currentFontWeight = settings.fontWeight || "400";
       let currentFontOpacity = settings.fontOpacity || "100";
-      let currentCustomShortcut = settings.customShortcut || "";
+      let currentCustomShortcut = settings.customShortcut !== undefined ? settings.customShortcut : "Alt+Z";
 
       // If we are opening option page from preset change in popup, load the preset values
       if (settings.loadPresetOnOpen && activePresetKey && presets[activePresetKey]) {
@@ -778,7 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
   customShortcutInput.addEventListener("blur", () => {
     customShortcutInput.classList.remove("recording");
     if (!customShortcutInput.value) {
-      chrome.storage.local.get({ customShortcut: "" }, (res) => {
+      chrome.storage.local.get({ customShortcut: "Alt+Z" }, (res) => {
         customShortcutInput.value = res.customShortcut;
       });
     }
