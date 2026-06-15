@@ -446,12 +446,13 @@
     });
 
     // Close panel when user clicks anywhere outside of it
-    document.addEventListener("mousedown", (e) => {
+    // Use capture phase on window to bypass websites that call stopPropagation() on mousedown
+    window.addEventListener("mousedown", (e) => {
       const path = e.composedPath();
       if (!path.some(node => node.id === "ai-helper-root")) {
         closePanel();
       }
-    });
+    }, true);
   }
 
   // Show Panel
