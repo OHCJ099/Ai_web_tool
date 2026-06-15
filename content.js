@@ -17,7 +17,8 @@
     theme: "auto",
     fontColor: "#000000",
     fontSize: "15",
-    fontWeight: "400"
+    fontWeight: "400",
+    enableSuperCopy: false
   };
 
   // State Variables
@@ -44,10 +45,12 @@
       fontSize: "15",
       fontWeight: "400",
       fontOpacity: "100",
-      customShortcut: ""
+      customShortcut: "",
+      enableSuperCopy: false
     }, (settings) => {
       config = settings;
       applyFontSettings();
+      updateSuperCopyState();
     });
 
     // Listen for options changes
@@ -76,10 +79,66 @@
       if (changes.customShortcut) {
         config.customShortcut = changes.customShortcut.newValue;
       }
+      if (changes.enableSuperCopy) {
+        config.enableSuperCopy = changes.enableSuperCopy.newValue;
+        updateSuperCopyState();
+      }
     });
 
     createUI();
     setupSelectionListeners();
+  }
+
+  // SuperCopy Bypass Logic
+  const superCopyEvents = ['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart', 'keydown'];
+
+  function handleSuperCopyCapture(e) {
+    if (!config.enableSuperCopy) return;
+
+    const type = e.type;
+    if (type === 'keydown') {
+      const isCopy = (e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C');
+      const isSelectAll = (e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A');
+      const isCut = (e.ctrlKey || e.metaKey) && (e.key === 'x' || e.key === 'X');
+      if (isCopy || isSelectAll || isCut) {
+        e.stopPropagation();
+      }
+    } else {
+      e.stopPropagation();
+    }
+  }
+
+  function updateSuperCopyState() {
+    // 1. Manage CSS styles
+    let styleEl = document.getElementById("ai-supercopy-style");
+    if (config.enableSuperCopy) {
+      if (!styleEl) {
+        styleEl = document.createElement("style");
+        styleEl.id = "ai-supercopy-style";
+        styleEl.innerHTML = `
+          * {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+          }
+        `;
+        document.documentElement.appendChild(styleEl);
+      }
+    } else {
+      if (styleEl) styleEl.remove();
+    }
+
+    // 2. Manage capturing event listeners on window
+    superCopyEvents.forEach(type => {
+      window.removeEventListener(type, handleSuperCopyCapture, true);
+    });
+
+    if (config.enableSuperCopy) {
+      superCopyEvents.forEach(type => {
+        window.addEventListener(type, handleSuperCopyCapture, true);
+      });
+    }
   }
 
   // Inject UI Host & Shadow DOM

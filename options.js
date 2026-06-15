@@ -13,7 +13,8 @@ const DEFAULTS = {
   fontSize: "15",
   fontWeight: "400",
   fontOpacity: "100",
-  customShortcut: ""
+  customShortcut: "",
+  enableSuperCopy: false
 };
 
 // Help text configurations for key
@@ -71,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelInput = document.getElementById("model");
   const systemPromptInput = document.getElementById("system-prompt");
   const themeSelect = document.getElementById("theme");
+  const enableSuperCopyInput = document.getElementById("enable-supercopy");
   const fontColorInput = document.getElementById("font-color");
   const fontColorHexInput = document.getElementById("font-color-hex");
   const fontSizeInput = document.getElementById("font-size");
@@ -208,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
       modelInput.value = currentModel;
       systemPromptInput.value = currentSystemPrompt;
       themeSelect.value = settings.theme;
+      enableSuperCopyInput.checked = settings.enableSuperCopy || false;
       enableThinkingInput.checked = currentEnableThinking;
       fontColorInput.value = currentFontColor;
       fontColorHexInput.value = currentFontColor;
@@ -445,6 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const systemPrompt = systemPromptInput.value.trim();
     const showFloatButton = false;
     const theme = themeSelect.value;
+    const enableSuperCopy = enableSuperCopyInput.checked;
     const enableThinking = enableThinkingInput.checked;
     const fontColor = fontColorInput.value;
     const fontSize = fontSizeInput.value;
@@ -514,6 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
         systemPrompt,
         showFloatButton,
         theme,
+        enableSuperCopy,
         enableThinking,
         fontColor,
         fontSize,
@@ -733,7 +738,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isSaving) return; // Skip if we triggered this change ourselves
     
     // Check if relevant settings changed externally
-    if (changes.currentPreset || changes.provider || changes.apiKey || changes.model || changes.fontColor || changes.fontSize || changes.fontWeight || changes.fontOpacity || changes.customShortcut) {
+    if (changes.currentPreset || changes.provider || changes.apiKey || changes.model || changes.fontColor || changes.fontSize || changes.fontWeight || changes.fontOpacity || changes.customShortcut || changes.enableSuperCopy) {
       chrome.storage.local.get(DEFAULTS, (settings) => {
         providerSelect.value = settings.provider;
         apiKeyInput.value = settings.apiKey;
@@ -741,6 +746,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modelInput.value = settings.model;
         systemPromptInput.value = settings.systemPrompt;
         themeSelect.value = settings.theme;
+        enableSuperCopyInput.checked = settings.enableSuperCopy || false;
         enableThinkingInput.checked = settings.enableThinking || false;
         fontColorInput.value = settings.fontColor || "#000000";
         fontColorHexInput.value = settings.fontColor || "#000000";

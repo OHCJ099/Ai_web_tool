@@ -114,15 +114,26 @@
               <p class="field-desc">建议规定 AI 回答的风格、语言和排版结构，如：直接给出选择题答案。</p>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
               <!-- Theme Selector -->
-              <div class="form-group theme-select-group">
+              <div class="form-group theme-select-group" style="margin-bottom: 0;">
                 <label for="theme">显示主题</label>
-                <select id="theme">
+                <select id="theme" style="height: 38px;">
                   <option value="auto">跟随系统 (Auto)</option>
                   <option value="light">浅色模式 (Light)</option>
                   <option value="dark">深色模式 (Dark)</option>
                 </select>
+              </div>
+
+              <!-- SuperCopy Selector -->
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="enable-supercopy">万能复制 (SuperCopy)</label>
+                <div style="display: flex; align-items: center; height: 38px;">
+                  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500;">
+                    <input type="checkbox" id="enable-supercopy" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color);">
+                    <span>解除网页防复制/禁用右键限制</span>
+                  </label>
+                </div>
               </div>
             </div>
 

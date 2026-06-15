@@ -13,7 +13,8 @@ const DEFAULTS = {
   fontSize: "15",
   fontWeight: "400",
   fontOpacity: "100",
-  customShortcut: ""
+  customShortcut: "",
+  enableSuperCopy: false
 };
 
 // [Bug1 Fix] Only initialize defaults on first install, not on update

@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const statusDesc = document.getElementById("status-desc");
   const btnOpenOptions = document.getElementById("btn-open-options");
   const popupPresetSelect = document.getElementById("popup-preset-select");
+  const popupSupercopyToggle = document.getElementById("popup-supercopy-toggle");
 
   let allPresets = {};
 
@@ -56,10 +57,12 @@ document.addEventListener("DOMContentLoaded", () => {
       model: "deepseek-ai/DeepSeek-V4-Flash",
       presets: INITIAL_PRESETS,
       currentPreset: "siliconflow-deepseek",
-      enableThinking: false
+      enableThinking: false,
+      enableSuperCopy: false
     }, (settings) => {
       // Update UI Status
       updateStatusUI(settings);
+      popupSupercopyToggle.checked = settings.enableSuperCopy || false;
 
       // Get presets from storage
       allPresets = settings.presets;
@@ -120,6 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     }
+  });
+
+  popupSupercopyToggle.addEventListener("change", () => {
+    chrome.storage.local.set({ enableSuperCopy: popupSupercopyToggle.checked });
   });
 
   // Run initial loading
