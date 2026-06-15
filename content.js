@@ -49,6 +49,9 @@
       enableSuperCopy: false
     }, (settings) => {
       config = settings;
+      if (!config.customShortcut || config.customShortcut.trim() === "") {
+        config.customShortcut = "Alt+Z";
+      }
       applyFontSettings();
       updateSuperCopyState();
     });
@@ -267,6 +270,7 @@
           handleAIShow(selectedText, x, y);
           sendResponse({ success: true });
         } else {
+          showToast("请先选择网页文本");
           sendResponse({ success: false, reason: "no_selection" });
         }
         return true;
@@ -537,7 +541,13 @@
       shadowRoot.appendChild(styleTag);
     }
     
-    const color = config.fontColor || "#000000";
+    let color = config.fontColor || "#000000";
+    // Auto-fallback for dark theme to make black text readable
+    const isDark = config.theme === "dark" || 
+      (config.theme === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    if (isDark && color === "#000000") {
+      color = "#f3f4f6";
+    }
     const size = config.fontSize || "15";
     const weight = config.fontWeight || "400";
     const opacityVal = parseFloat(config.fontOpacity || "100") / 100;

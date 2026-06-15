@@ -269,8 +269,9 @@ document.addEventListener("DOMContentLoaded", () => {
       fontWeightSelect.value = preset.fontWeight || "400";
       fontOpacityInput.value = preset.fontOpacity || "100";
       fontOpacityVal.innerText = (preset.fontOpacity || "100") + "%";
-      customShortcutInput.value = preset.customShortcut || "";
-
+      if (preset.customShortcut !== undefined) {
+        customShortcutInput.value = preset.customShortcut;
+      }
       adjustUIByProvider(preset.provider, false);
       toggleDeleteButton(selectedKey);
       

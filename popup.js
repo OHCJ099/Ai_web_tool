@@ -6,7 +6,12 @@ const INITIAL_PRESETS = {
     endpoint: "https://api.siliconflow.cn/v1",
     model: "deepseek-ai/DeepSeek-V4-Flash",
     systemPrompt: "你是一个最极简的答题机器。不要解析，不要原理，只给最终答案：\n1. 选择题/多选题：只输出正确选项字母（如：A），不要任何其他文字。\n2. 判断题：只输出【对】或【错】，不要解析。\n3. 其他题目：仅用一句话回答核心答案，字数控制在 50 字以内。",
-    enableThinking: false
+    enableThinking: false,
+    fontColor: "#000000",
+    fontSize: "15",
+    fontWeight: "400",
+    fontOpacity: "100",
+    customShortcut: "Alt+Z"
   }
 };
 
