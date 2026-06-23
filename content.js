@@ -29,6 +29,9 @@
   let isStreaming = false; // Track streaming state for disconnect detection
   let codeBlocksCache = []; // Store code blocks for copy-to-clipboard functionality
 
+  // Local Question Bank Cache
+  let questionsCache = [];
+
   // [Edge4 Fix] HTML escape helper to prevent XSS
   function escapeHtml(text) {
     const div = document.createElement("div");
@@ -90,6 +93,85 @@
 
     createUI();
     setupSelectionListeners();
+    loadQuestions();
+  }
+
+  // Load questions.json from extension resources
+  function loadQuestions() {
+    if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.getURL) {
+      const url = chrome.runtime.getURL("questions.json");
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          questionsCache = data;
+          console.log(`AI Selection Helper: Successfully loaded ${questionsCache.length} questions from local bank.`);
+        })
+        .catch(err => {
+          console.error("AI Selection Helper: Failed to load local questions:", err);
+        });
+    }
+  }
+
+  // Sørensen–Dice Coefficient for string similarity
+  function getSimilarity(str1, str2) {
+    const clean = s => s.replace(/[\s\r\n\t.,\/#!$%\^&\*;:{}=\-_`~()（）?？_—\[\]【】一二三四五六七八九十]/g, "");
+    const s1 = clean(str1);
+    const s2 = clean(str2);
+    if (s1 === s2) return 1.0;
+    if (!s1 || !s2) return 0.0;
+
+    const getBigrams = (str) => {
+      const bigrams = new Set();
+      for (let i = 0; i < str.length - 1; i++) {
+        bigrams.add(str.substring(i, i + 2));
+      }
+      return bigrams;
+    };
+
+    const b1 = getBigrams(s1);
+    const b2 = getBigrams(s2);
+    if (b1.size === 0 || b2.size === 0) {
+      let intersection = 0;
+      const chars1 = new Set(s1);
+      const chars2 = new Set(s2);
+      for (const char of chars1) {
+        if (chars2.has(char)) intersection++;
+      }
+      return (2.0 * intersection) / (chars1.size + chars2.size);
+    }
+
+    let intersection = 0;
+    for (const bigram of b1) {
+      if (b2.has(bigram)) {
+        intersection++;
+      }
+    }
+    return (2.0 * intersection) / (b1.size + b2.size);
+  }
+
+  // Find local answer based on similarity matching
+  function findLocalAnswer(text) {
+    if (!questionsCache || questionsCache.length === 0) return null;
+    let bestMatch = null;
+    let maxSimilarity = 0.0;
+    const startTime = performance.now();
+
+    for (const q of questionsCache) {
+      const sim = getSimilarity(text, q.prompt);
+      if (sim > maxSimilarity) {
+        maxSimilarity = sim;
+        bestMatch = q;
+      }
+      if (sim === 1.0) break; // Optimization: early exit for perfect match
+    }
+
+    const duration = performance.now() - startTime;
+    console.log(`AI Selection Helper: Local match search took ${duration.toFixed(2)}ms. Similarity: ${maxSimilarity.toFixed(4)}, id: ${bestMatch ? bestMatch.id : "none"}`);
+
+    if (maxSimilarity >= 0.80 && bestMatch) {
+      return bestMatch.answer;
+    }
+    return null;
   }
 
   // SuperCopy Bypass Logic
@@ -620,6 +702,16 @@
     let fullAnswer = "";
     let fullThinking = "";
     const answerBox = shadowRoot.querySelector(".ai-panel-answer");
+
+    // Check local question bank first
+    const localAnswer = findLocalAnswer(text);
+    if (localAnswer) {
+      isStreaming = false;
+      answerBox.innerHTML = "";
+      renderResponse(localAnswer, answerBox, "", false);
+      updateStatus("active", "本地命中");
+      return;
+    }
 
     // Establish connection to service worker
     activePort = chrome.runtime.connect({ name: "ai-stream" });
