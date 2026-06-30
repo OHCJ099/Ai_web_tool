@@ -117,8 +117,8 @@
       });
     };
 
-    container.querySelectorAll(".answerBg,.option,.choices li,.choice li,[class*=option],[class*=answerBg]").forEach((el) => {
-      const letterEl = el.querySelector(".num_option,.num_option_dx,[data]");
+    container.querySelectorAll(".answerBg,.singleoption,.multioption,.judgeoption,.option,.choices li,.choice li,[class*=option],[class*=answerBg]").forEach((el) => {
+      const letterEl = el.querySelector(".addChoice,.addMultipleChoice,.num_option,.num_option_dx,[data]");
       const letter = (letterEl?.getAttribute("data") || letterEl?.textContent || "").trim().match(/[A-Z]/i)?.[0]?.toUpperCase() || optionLetter(options.length);
       const t = textOf(el).replace(/^\s*[A-Z]\s*[\.、．)]?\s*/i, "");
       if (t && t.length < 500) add(el, t, letter);
@@ -145,8 +145,14 @@
   function inferType(container, options, inputs) {
     const text = textOf(container);
     const cls = `${container.className || ""} ${container.getAttribute("typename") || ""}`.toLowerCase();
+    const qid = container.getAttribute?.("data") || container.querySelector?.("#questionId")?.value || document.querySelector("#questionId")?.value || "";
+    const cxType = qid ? (container.querySelector?.(`input[name="type${CSS.escape(qid)}"]`) || document.querySelector(`input[name="type${CSS.escape(qid)}"]`))?.value : "";
+    if (cxType === "1") return "multi";
+    if (cxType === "2" || cxType === "9" || cxType === "10" || cxType === "4" || cxType === "5" || cxType === "6" || cxType === "7" || cxType === "8" || cxType === "18") return "fill";
+    if (cxType === "3") return "judge";
+    if (cxType === "0") return "single";
     if (inputs.length && !options.length) return "fill";
-    if (/多选|multiple|checkbox|multi/.test(cls + text) || container.querySelector("input[type=checkbox],[role=checkbox],.num_option_dx")) return "multi";
+    if (/多选|multiple|checkbox|multi/.test(cls + text) || container.querySelector("input[type=checkbox],[role=checkbox],.num_option_dx,.addMultipleChoice")) return "multi";
     const joined = options.map(o => norm(o.text)).join("|");
     if (options.length === 2 && /(正确|错误|对|错|true|false|是|否)/i.test(joined)) return "judge";
     return options.length ? "single" : "fill";
@@ -180,7 +186,9 @@
     for (const root of dedup) {
       const options = collectOptions(root);
       const inputs = findInputs(root);
-      if (!options.length && !inputs.length) continue;
+      const qid = root.getAttribute?.("data") || document.querySelector("#questionId")?.value || "";
+      const hasChaoxingAnswer = !!qid && !!(root.querySelector?.(`#answer${CSS.escape(qid)},[name="answer${CSS.escape(qid)}"],[name^="answerEditor${CSS.escape(qid)}"]`) || document.querySelector(`#answer${CSS.escape(qid)},[name="answer${CSS.escape(qid)}"],[name^="answerEditor${CSS.escape(qid)}"]`));
+      if (!options.length && !inputs.length && !hasChaoxingAnswer) continue;
       const text = findQuestionText(root, options);
       if (!text || text.length < 2) continue;
       questions.push({ element: root, text, type: inferType(root, options, inputs), options, inputs });
@@ -302,10 +310,11 @@
       "";
     if (!qid) return false;
 
-    const choiceNodes = Array.from(question.element?.querySelectorAll?.(`.choice${CSS.escape(qid)}, .addChoice[qid="${CSS.escape(qid)}"], .addMultipleChoice[qid="${CSS.escape(qid)}"], .num_option[qid="${CSS.escape(qid)}"], .num_option_dx[qid="${CSS.escape(qid)}"]`) || []);
+    const safeQid = String(qid).replace(/[^a-zA-Z0-9_-]/g, "");
+    const choiceNodes = Array.from(question.element?.querySelectorAll?.(`.choice${safeQid}, .addChoice[qid="${CSS.escape(qid)}"], .addMultipleChoice[qid="${CSS.escape(qid)}"], .num_option[qid="${CSS.escape(qid)}"], .num_option_dx[qid="${CSS.escape(qid)}"]`) || []);
     if (!choiceNodes.length) return false;
 
-    const isMulti = question.type === "multi";
+    const isMulti = question.type === "multi" || choiceNodes.some((node) => node.classList.contains("addMultipleChoice") || node.classList.contains("num_option_dx"));
     let applied = false;
     for (const node of choiceNodes) {
       const letter = (node.getAttribute("data") || textOf(node)).trim().match(/[A-J]/i)?.[0]?.toUpperCase();
@@ -313,6 +322,7 @@
       const parent = node.closest(".answerBg") || node.parentElement;
       if (isMulti) {
         node.classList.toggle("check_answer_dx", should);
+        node.classList.remove("check_answer");
       } else {
         node.classList.toggle("check_answer", should);
         node.classList.remove("check_answer_dx");
@@ -375,10 +385,75 @@
   function fillAnswer(question, answer) {
     const normalized = normalizeAnswer(answer, question);
     if (question.type === "single" || question.type === "multi" || question.type === "judge") return fillChoice(question, normalized);
+    if (fillChaoxingText(question, normalized)) return true;
     const parts = String(normalized).split(/\s*(?:#|\||；|;|\n)\s*/).filter(Boolean);
     let ok = false;
     question.inputs.forEach((input, i) => { ok = setValue(input, parts[i] || normalized) || ok; });
     return ok;
+  }
+
+  function fillChaoxingText(question, answer) {
+    const qid =
+      question.element?.getAttribute?.("data") ||
+      document.querySelector("#questionId")?.value ||
+      question.element?.querySelector?.("[name=questionId]")?.value ||
+      "";
+    if (!qid) return false;
+
+    const hidden =
+      document.getElementById(`answer${qid}`) ||
+      document.querySelector(`input[name="answer${CSS.escape(qid)}"],textarea[name="answer${CSS.escape(qid)}"]`);
+    const cxType = (document.querySelector(`input[name="type${CSS.escape(qid)}"]`) || question.element?.querySelector?.(`input[name="type${CSS.escape(qid)}"]`))?.value || "";
+    const parts = String(answer || "").split(/\s*(?:#|\||；|;|\n)\s*/).filter(Boolean);
+    let changed = false;
+
+    // 学习通填空题通常是 answerEditor{qid}1/2...，提交前会同步成 JSON。
+    const blankEditors = Array.from(document.querySelectorAll(`textarea[name^="answerEditor${CSS.escape(qid)}"],iframe[id^="answerEditor${CSS.escape(qid)}"]`));
+    if (blankEditors.length) {
+      const answerItems = [];
+      blankEditors.forEach((el, i) => {
+        const value = parts[i] || answer;
+        setValue(el, value);
+        answerItems.push({ name: String(i + 1), content: value });
+        changed = true;
+      });
+      if (hidden) {
+        hidden.value = JSON.stringify(answerItems);
+        fire(hidden, "input");
+        fire(hidden, "change");
+      }
+    }
+
+    // 简答/论述等富文本题通常直接使用 answer{qid} 编辑器/textarea。
+    if (!changed) {
+      const directEditors = Array.from(document.querySelectorAll(`textarea#answer${CSS.escape(qid)},textarea[name="answer${CSS.escape(qid)}"],iframe#answer${CSS.escape(qid)},[contenteditable=true]`))
+        .filter((el) => question.element.contains(el) || el.id === `answer${qid}` || el.name === `answer${qid}`);
+      if (directEditors.length) {
+        directEditors.forEach((el) => {
+          setValue(el, answer);
+          changed = true;
+        });
+      }
+    }
+
+    // 如果只有隐藏域，也写入学习通可提交的值：填空为 JSON，简答为 HTML/文本。
+    if (hidden && (changed || !hidden.value) && !blankEditors.length) {
+      if (cxType === "2" || cxType === "9" || cxType === "10" || parts.length > 1) {
+        hidden.value = JSON.stringify((parts.length ? parts : [answer]).map((content, i) => ({ name: String(i + 1), content })));
+      } else {
+        hidden.value = answer;
+      }
+      fire(hidden, "input");
+      fire(hidden, "change");
+      changed = true;
+    }
+
+    const isAnswered = document.getElementById("isAnswered");
+    if (isAnswered && changed) {
+      isAnswered.value = "true";
+      fire(isAnswered, "change");
+    }
+    return changed;
   }
 
   function findSubmitButton() {
