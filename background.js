@@ -134,7 +134,7 @@ async function sendAutoAnswerCommand(action) {
 
 // Handle incoming connections from Content Script
 chrome.runtime.onConnect.addListener((port) => {
-  if (port.name === "ai-stream") {
+  if (port.name === "ai-stream" || port.name === "ai-auto-answer") {
     port.onMessage.addListener(async (msg) => {
       if (msg.action === "REQUEST_AI") {
         try {

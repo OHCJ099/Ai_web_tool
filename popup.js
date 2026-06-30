@@ -69,6 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
       currentPreset: "siliconflow-deepseek",
       enableThinking: false,
       enableSuperCopy: false,
+      autoAnswerRunning: false,
+      autoAnswerStatus: "就绪",
       aiAutoAnswerRunning: false,
       aiAutoAnswerIntervalMs: 1500,
       aiAutoAnswerAutoSubmit: true,
@@ -150,8 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
     autoAnswerInterval.value = settings.aiAutoAnswerIntervalMs || 1500;
     autoAnswerSubmit.checked = settings.aiAutoAnswerAutoSubmit !== false;
     autoAnswerNext.checked = settings.aiAutoAnswerAutoNext !== false;
-    const running = !!settings.aiAutoAnswerRunning;
-    autoAnswerStatus.textContent = running ? (settings.aiAutoAnswerStatus || "运行中") : (settings.aiAutoAnswerStatus || "就绪");
+    const running = !!(settings.autoAnswerRunning || settings.aiAutoAnswerRunning);
+    autoAnswerStatus.textContent = running ? (settings.autoAnswerStatus || settings.aiAutoAnswerStatus || "运行中") : (settings.autoAnswerStatus || settings.aiAutoAnswerStatus || "就绪");
     autoAnswerStatus.style.color = running ? "#10b981" : "var(--text-muted)";
     btnAutoAnswerToggle.textContent = running ? "停止自动答题" : "开始连续答题";
     btnAutoAnswerToggle.classList.toggle("running", running);
@@ -180,6 +182,9 @@ document.addEventListener("DOMContentLoaded", () => {
   async function saveAutoAnswerSettings() {
     const interval = Math.max(300, Number(autoAnswerInterval.value) || 1500);
     await chrome.storage.local.set({
+      autoAnswerIntervalMs: interval,
+      autoAnswerAutoSubmit: autoAnswerSubmit.checked,
+      autoAnswerAutoNext: autoAnswerNext.checked,
       aiAutoAnswerIntervalMs: interval,
       aiAutoAnswerAutoSubmit: autoAnswerSubmit.checked,
       aiAutoAnswerAutoNext: autoAnswerNext.checked
@@ -191,12 +196,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isRunning) {
       autoAnswerStatus.textContent = "正在停止...";
       await sendAutoAnswerMessage("STOP_AUTO_ANSWER");
-      chrome.storage.local.get({ aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已停止" }, updateAutoAnswerUI);
+      chrome.storage.local.get({ autoAnswerRunning: false, autoAnswerStatus: "已停止", aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已停止", aiAutoAnswerIntervalMs: 1500, aiAutoAnswerAutoSubmit: true, aiAutoAnswerAutoNext: true }, updateAutoAnswerUI);
     } else {
       await saveAutoAnswerSettings();
       autoAnswerStatus.textContent = "正在启动...";
       await sendAutoAnswerMessage("START_AUTO_ANSWER");
-      chrome.storage.local.get({ aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已启动" }, updateAutoAnswerUI);
+      chrome.storage.local.get({ autoAnswerRunning: false, autoAnswerStatus: "已启动", aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已启动", aiAutoAnswerIntervalMs: 1500, aiAutoAnswerAutoSubmit: true, aiAutoAnswerAutoNext: true }, updateAutoAnswerUI);
     }
   });
 
@@ -206,8 +211,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
-    if (changes.aiAutoAnswerRunning || changes.aiAutoAnswerStatus || changes.aiAutoAnswerIntervalMs || changes.aiAutoAnswerAutoSubmit || changes.aiAutoAnswerAutoNext) {
+    if (changes.autoAnswerRunning || changes.autoAnswerStatus || changes.aiAutoAnswerRunning || changes.aiAutoAnswerStatus || changes.aiAutoAnswerIntervalMs || changes.aiAutoAnswerAutoSubmit || changes.aiAutoAnswerAutoNext) {
       chrome.storage.local.get({
+        autoAnswerRunning: false,
+        autoAnswerStatus: "就绪",
         aiAutoAnswerRunning: false,
         aiAutoAnswerIntervalMs: 1500,
         aiAutoAnswerAutoSubmit: true,
