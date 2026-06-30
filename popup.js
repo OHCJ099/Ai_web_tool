@@ -23,10 +23,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const popupPresetSelect = document.getElementById("popup-preset-select");
   const popupSupercopyToggle = document.getElementById("popup-supercopy-toggle");
   const autoAnswerStatus = document.getElementById("auto-answer-status");
+  const autoAnswerQuestion = document.getElementById("auto-answer-question");
+  const autoAnswerAnswer = document.getElementById("auto-answer-answer");
+  const autoAnswerHint = document.getElementById("auto-answer-hint");
   const autoAnswerInterval = document.getElementById("auto-answer-interval");
   const autoAnswerSubmit = document.getElementById("auto-answer-submit");
   const autoAnswerNext = document.getElementById("auto-answer-next");
   const btnAutoAnswerToggle = document.getElementById("btn-auto-answer-toggle");
+  const btnWordAnswer = document.getElementById("btn-word-answer");
 
   let allPresets = {};
 
@@ -71,6 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
       enableSuperCopy: false,
       autoAnswerRunning: false,
       autoAnswerStatus: "就绪",
+      autoAnswerCurrentQuestion: "",
+      autoAnswerCurrentAnswer: "",
+      customShortcutAutoStart: "Alt+C",
+      customShortcutAutoStop: "Alt+V",
+      customShortcutWordAnswer: "Alt+W",
       aiAutoAnswerRunning: false,
       aiAutoAnswerIntervalMs: 1500,
       aiAutoAnswerAutoSubmit: true,
@@ -155,6 +164,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const running = !!(settings.autoAnswerRunning || settings.aiAutoAnswerRunning);
     autoAnswerStatus.textContent = running ? (settings.autoAnswerStatus || settings.aiAutoAnswerStatus || "运行中") : (settings.autoAnswerStatus || settings.aiAutoAnswerStatus || "就绪");
     autoAnswerStatus.style.color = running ? "#10b981" : "var(--text-muted)";
+    autoAnswerQuestion.textContent = `题目：${settings.autoAnswerCurrentQuestion || "-"}`;
+    autoAnswerAnswer.textContent = `答案：${settings.autoAnswerCurrentAnswer || "-"}`;
+    autoAnswerHint.textContent = `开始：${settings.customShortcutAutoStart || "Alt+C"}  停止：${settings.customShortcutAutoStop || "Alt+V"}  单词：${settings.customShortcutWordAnswer || "Alt+W"}`;
     btnAutoAnswerToggle.textContent = running ? "停止自动答题" : "开始连续答题";
     btnAutoAnswerToggle.classList.toggle("running", running);
     btnAutoAnswerToggle.dataset.running = running ? "1" : "0";
@@ -205,16 +217,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  btnWordAnswer.addEventListener("click", async () => {
+    autoAnswerStatus.textContent = "正在回答单词题...";
+    await sendAutoAnswerMessage("ANSWER_WORD_QUESTION");
+  });
+
   [autoAnswerInterval, autoAnswerSubmit, autoAnswerNext].forEach((el) => {
     el.addEventListener("change", saveAutoAnswerSettings);
   });
 
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
-    if (changes.autoAnswerRunning || changes.autoAnswerStatus || changes.aiAutoAnswerRunning || changes.aiAutoAnswerStatus || changes.aiAutoAnswerIntervalMs || changes.aiAutoAnswerAutoSubmit || changes.aiAutoAnswerAutoNext) {
+    if (changes.autoAnswerRunning || changes.autoAnswerStatus || changes.autoAnswerCurrentQuestion || changes.autoAnswerCurrentAnswer || changes.customShortcutAutoStart || changes.customShortcutAutoStop || changes.customShortcutWordAnswer || changes.aiAutoAnswerRunning || changes.aiAutoAnswerStatus || changes.aiAutoAnswerIntervalMs || changes.aiAutoAnswerAutoSubmit || changes.aiAutoAnswerAutoNext) {
       chrome.storage.local.get({
         autoAnswerRunning: false,
         autoAnswerStatus: "就绪",
+        autoAnswerCurrentQuestion: "",
+        autoAnswerCurrentAnswer: "",
+        customShortcutAutoStart: "Alt+C",
+        customShortcutAutoStop: "Alt+V",
+        customShortcutWordAnswer: "Alt+W",
         aiAutoAnswerRunning: false,
         aiAutoAnswerIntervalMs: 1500,
         aiAutoAnswerAutoSubmit: true,

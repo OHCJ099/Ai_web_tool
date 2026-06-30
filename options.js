@@ -13,7 +13,11 @@ const DEFAULTS = {
   fontSize: "15",
   fontWeight: "400",
   fontOpacity: "100",
-  customShortcut: "Alt+Z",
+  customShortcutAI: "Alt+Z",
+  customShortcutLocal: "Alt+Q",
+  customShortcutAutoStart: "Alt+C",
+  customShortcutAutoStop: "Alt+V",
+  customShortcutWordAnswer: "Alt+W",
   enableSuperCopy: false
 };
 
@@ -59,7 +63,11 @@ const INITIAL_PRESETS = {
     fontSize: "15",
     fontWeight: "400",
     fontOpacity: "100",
-    customShortcut: "Alt+Z"
+    customShortcutAI: "Alt+Z",
+    customShortcutLocal: "Alt+Q",
+    customShortcutAutoStart: "Alt+C",
+    customShortcutAutoStop: "Alt+V",
+    customShortcutWordAnswer: "Alt+W"
   }
 };
 
@@ -79,8 +87,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const fontWeightSelect = document.getElementById("font-weight");
   const fontOpacityInput = document.getElementById("font-opacity");
   const fontOpacityVal = document.getElementById("font-opacity-val");
-  const customShortcutInput = document.getElementById("custom-shortcut");
-  const btnClearShortcut = document.getElementById("btn-clear-shortcut");
+  const customShortcutAIInput = document.getElementById("custom-shortcut-ai");
+  const btnClearShortcutAI = document.getElementById("btn-clear-shortcut-ai");
+  const customShortcutLocalInput = document.getElementById("custom-shortcut-local");
+  const btnClearShortcutLocal = document.getElementById("btn-clear-shortcut-local");
+  const customShortcutAutoStartInput = document.getElementById("custom-shortcut-auto-start");
+  const btnClearShortcutAutoStart = document.getElementById("btn-clear-shortcut-auto-start");
+  const customShortcutAutoStopInput = document.getElementById("custom-shortcut-auto-stop");
+  const btnClearShortcutAutoStop = document.getElementById("btn-clear-shortcut-auto-stop");
+  const customShortcutWordAnswerInput = document.getElementById("custom-shortcut-word-answer");
+  const btnClearShortcutWordAnswer = document.getElementById("btn-clear-shortcut-word-answer");
   
   const toggleKeyBtn = document.getElementById("toggle-key-visibility");
   const keyHelpText = document.getElementById("key-help-text");
@@ -183,7 +199,11 @@ document.addEventListener("DOMContentLoaded", () => {
       let currentFontSize = settings.fontSize || "15";
       let currentFontWeight = settings.fontWeight || "400";
       let currentFontOpacity = settings.fontOpacity || "100";
-      let currentCustomShortcut = settings.customShortcut !== undefined ? settings.customShortcut : "Alt+Z";
+      let currentCustomShortcutAI = settings.customShortcutAI !== undefined ? settings.customShortcutAI : (settings.customShortcut !== undefined ? settings.customShortcut : "Alt+Z");
+      let currentCustomShortcutLocal = settings.customShortcutLocal !== undefined ? settings.customShortcutLocal : "Alt+Q";
+      let currentCustomShortcutAutoStart = settings.customShortcutAutoStart || "Alt+C";
+      let currentCustomShortcutAutoStop = settings.customShortcutAutoStop || "Alt+V";
+      let currentCustomShortcutWordAnswer = settings.customShortcutWordAnswer || "Alt+W";
 
       // If we are opening option page from preset change in popup, load the preset values
       if (settings.loadPresetOnOpen && activePresetKey && presets[activePresetKey]) {
@@ -198,7 +218,11 @@ document.addEventListener("DOMContentLoaded", () => {
         currentFontSize = preset.fontSize || "15";
         currentFontWeight = preset.fontWeight || "400";
         currentFontOpacity = preset.fontOpacity || "100";
-        currentCustomShortcut = preset.customShortcut || "";
+        currentCustomShortcutAI = preset.customShortcutAI !== undefined ? preset.customShortcutAI : (preset.customShortcut || "");
+        currentCustomShortcutLocal = preset.customShortcutLocal || "";
+        currentCustomShortcutAutoStart = preset.customShortcutAutoStart || "Alt+C";
+        currentCustomShortcutAutoStop = preset.customShortcutAutoStop || "Alt+V";
+        currentCustomShortcutWordAnswer = preset.customShortcutWordAnswer || "Alt+W";
 
         // Clear the one-time redirect flag
         chrome.storage.local.set({ loadPresetOnOpen: false });
@@ -218,7 +242,11 @@ document.addEventListener("DOMContentLoaded", () => {
       fontWeightSelect.value = currentFontWeight;
       fontOpacityInput.value = currentFontOpacity;
       fontOpacityVal.innerText = currentFontOpacity + "%";
-      customShortcutInput.value = currentCustomShortcut;
+      customShortcutAIInput.value = currentCustomShortcutAI;
+      customShortcutLocalInput.value = currentCustomShortcutLocal;
+      customShortcutAutoStartInput.value = currentCustomShortcutAutoStart;
+      customShortcutAutoStopInput.value = currentCustomShortcutAutoStop;
+      customShortcutWordAnswerInput.value = currentCustomShortcutWordAnswer;
 
       lastSelectedProvider = currentProvider;
       adjustUIByProvider(currentProvider, false);
@@ -269,9 +297,21 @@ document.addEventListener("DOMContentLoaded", () => {
       fontWeightSelect.value = preset.fontWeight || "400";
       fontOpacityInput.value = preset.fontOpacity || "100";
       fontOpacityVal.innerText = (preset.fontOpacity || "100") + "%";
-      if (preset.customShortcut !== undefined) {
-        customShortcutInput.value = preset.customShortcut;
+      if (preset.customShortcutAI !== undefined) {
+        customShortcutAIInput.value = preset.customShortcutAI;
+      } else if (preset.customShortcut !== undefined) {
+        customShortcutAIInput.value = preset.customShortcut;
+      } else {
+        customShortcutAIInput.value = "";
       }
+      if (preset.customShortcutLocal !== undefined) {
+        customShortcutLocalInput.value = preset.customShortcutLocal;
+      } else {
+        customShortcutLocalInput.value = "";
+      }
+      customShortcutAutoStartInput.value = preset.customShortcutAutoStart || "Alt+C";
+      customShortcutAutoStopInput.value = preset.customShortcutAutoStop || "Alt+V";
+      customShortcutWordAnswerInput.value = preset.customShortcutWordAnswer || "Alt+W";
       adjustUIByProvider(preset.provider, false);
       toggleDeleteButton(selectedKey);
       
@@ -301,7 +341,11 @@ document.addEventListener("DOMContentLoaded", () => {
       fontSize: fontSizeInput.value,
       fontWeight: fontWeightSelect.value,
       fontOpacity: fontOpacityInput.value,
-      customShortcut: customShortcutInput.value,
+      customShortcutAI: customShortcutAIInput.value,
+      customShortcutLocal: customShortcutLocalInput.value,
+      customShortcutAutoStart: customShortcutAutoStartInput.value,
+      customShortcutAutoStop: customShortcutAutoStopInput.value,
+      customShortcutWordAnswer: customShortcutWordAnswerInput.value,
       isBuiltin: false
     };
 
@@ -455,7 +499,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const fontSize = fontSizeInput.value;
     const fontWeight = fontWeightSelect.value;
     const fontOpacity = fontOpacityInput.value;
-    const customShortcut = customShortcutInput.value;
+    const customShortcutAI = customShortcutAIInput.value;
+    const customShortcutLocal = customShortcutLocalInput.value;
+    const customShortcutAutoStart = customShortcutAutoStartInput.value;
+    const customShortcutAutoStop = customShortcutAutoStopInput.value;
+    const customShortcutWordAnswer = customShortcutWordAnswerInput.value;
 
     // [Edge8 Fix] Validate endpoint URL format
     if (provider !== "mock" && provider !== "gemini" && endpoint) {
@@ -490,7 +538,11 @@ document.addEventListener("DOMContentLoaded", () => {
             preset.fontSize !== fontSize ||
             preset.fontWeight !== fontWeight ||
             preset.fontOpacity !== fontOpacity ||
-            preset.customShortcut !== customShortcut;
+            preset.customShortcutAI !== customShortcutAI ||
+            preset.customShortcutLocal !== customShortcutLocal ||
+            preset.customShortcutAutoStart !== customShortcutAutoStart ||
+            preset.customShortcutAutoStop !== customShortcutAutoStop ||
+            preset.customShortcutWordAnswer !== customShortcutWordAnswer;
         
         if (hasChanges) {
           if (confirm(`当前配置与预设 "${preset.name}" 不同，是否同时更新该预设？\n\n选择"取消"将仅保存当前配置而不修改预设。`)) {
@@ -504,7 +556,11 @@ document.addEventListener("DOMContentLoaded", () => {
             presets[selectedPresetKey].fontSize = fontSize;
             presets[selectedPresetKey].fontWeight = fontWeight;
             presets[selectedPresetKey].fontOpacity = fontOpacity;
-            presets[selectedPresetKey].customShortcut = customShortcut;
+            presets[selectedPresetKey].customShortcutAI = customShortcutAI;
+            presets[selectedPresetKey].customShortcutLocal = customShortcutLocal;
+            presets[selectedPresetKey].customShortcutAutoStart = customShortcutAutoStart;
+            presets[selectedPresetKey].customShortcutAutoStop = customShortcutAutoStop;
+            presets[selectedPresetKey].customShortcutWordAnswer = customShortcutWordAnswer;
             presetUpdated = true;
           }
         }
@@ -525,7 +581,11 @@ document.addEventListener("DOMContentLoaded", () => {
         fontSize,
         fontWeight,
         fontOpacity,
-        customShortcut,
+        customShortcutAI,
+        customShortcutLocal,
+        customShortcutAutoStart,
+        customShortcutAutoStop,
+        customShortcutWordAnswer,
         presets,
         currentPreset: selectedPresetKey
       }, () => {
@@ -739,7 +799,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isSaving) return; // Skip if we triggered this change ourselves
     
     // Check if relevant settings changed externally
-    if (changes.currentPreset || changes.provider || changes.apiKey || changes.model || changes.fontColor || changes.fontSize || changes.fontWeight || changes.fontOpacity || changes.customShortcut || changes.enableSuperCopy) {
+    if (changes.currentPreset || changes.provider || changes.apiKey || changes.model || changes.fontColor || changes.fontSize || changes.fontWeight || changes.fontOpacity || changes.customShortcutAI || changes.customShortcutLocal || changes.customShortcutAutoStart || changes.customShortcutAutoStop || changes.customShortcutWordAnswer || changes.customShortcut || changes.enableSuperCopy) {
       chrome.storage.local.get(DEFAULTS, (settings) => {
         providerSelect.value = settings.provider;
         apiKeyInput.value = settings.apiKey;
@@ -755,7 +815,11 @@ document.addEventListener("DOMContentLoaded", () => {
         fontWeightSelect.value = settings.fontWeight || "400";
         fontOpacityInput.value = settings.fontOpacity || "100";
         fontOpacityVal.innerText = (settings.fontOpacity || "100") + "%";
-        customShortcutInput.value = settings.customShortcut || "";
+        customShortcutAIInput.value = settings.customShortcutAI !== undefined ? settings.customShortcutAI : (settings.customShortcut || "");
+        customShortcutLocalInput.value = settings.customShortcutLocal || "";
+        customShortcutAutoStartInput.value = settings.customShortcutAutoStart || "Alt+C";
+        customShortcutAutoStopInput.value = settings.customShortcutAutoStop || "Alt+V";
+        customShortcutWordAnswerInput.value = settings.customShortcutWordAnswer || "Alt+W";
 
         lastSelectedProvider = settings.provider;
         adjustUIByProvider(settings.provider, false);
@@ -769,48 +833,63 @@ document.addEventListener("DOMContentLoaded", () => {
     fontOpacityVal.innerText = fontOpacityInput.value + "%";
   });
 
-  // Shortcut Recording Logic
-  customShortcutInput.addEventListener("focus", () => {
-    customShortcutInput.classList.add("recording");
-    customShortcutInput.value = "";
-    customShortcutInput.placeholder = "请按下组合键...";
-  });
+  // Helper function to setup shortcut recording
+  function setupShortcutRecording(inputEl, clearBtnEl, defaultKey) {
+    const fallbackMap = {
+      customShortcutAI: "Alt+Z",
+      customShortcutLocal: "Alt+Q",
+      customShortcutAutoStart: "Alt+C",
+      customShortcutAutoStop: "Alt+V",
+      customShortcutWordAnswer: "Alt+W"
+    };
+    inputEl.addEventListener("focus", () => {
+      inputEl.classList.add("recording");
+      inputEl.value = "";
+      inputEl.placeholder = "请按下组合键...";
+    });
 
-  customShortcutInput.addEventListener("blur", () => {
-    customShortcutInput.classList.remove("recording");
-    if (!customShortcutInput.value) {
-      chrome.storage.local.get({ customShortcut: "Alt+Z" }, (res) => {
-        customShortcutInput.value = res.customShortcut;
-      });
-    }
-  });
-
-  customShortcutInput.addEventListener("keydown", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const modifiers = [];
-    if (e.ctrlKey) modifiers.push("Ctrl");
-    if (e.altKey) modifiers.push("Alt");
-    if (e.shiftKey) modifiers.push("Shift");
-    if (e.metaKey) modifiers.push("Meta");
-
-    const key = e.key;
-    if (key !== "Control" && key !== "Alt" && key !== "Shift" && key !== "Meta") {
-      let displayKey = key;
-      if (displayKey.length === 1) {
-        displayKey = displayKey.toUpperCase();
+    inputEl.addEventListener("blur", () => {
+      inputEl.classList.remove("recording");
+      if (!inputEl.value) {
+        chrome.storage.local.get({ [defaultKey]: fallbackMap[defaultKey] || "" }, (res) => {
+          inputEl.value = res[defaultKey];
+        });
       }
-      modifiers.push(displayKey);
-      customShortcutInput.value = modifiers.join("+");
-      customShortcutInput.blur(); // Trigger blur to exit recording mode
-    }
-  });
+    });
 
-  btnClearShortcut.addEventListener("click", () => {
-    customShortcutInput.value = "";
-    customShortcutInput.placeholder = "点击录制快捷键，如 Alt+Q";
-  });
+    inputEl.addEventListener("keydown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const modifiers = [];
+      if (e.ctrlKey) modifiers.push("Ctrl");
+      if (e.altKey) modifiers.push("Alt");
+      if (e.shiftKey) modifiers.push("Shift");
+      if (e.metaKey) modifiers.push("Meta");
+
+      const key = e.key;
+      if (key !== "Control" && key !== "Alt" && key !== "Shift" && key !== "Meta") {
+        let displayKey = key;
+        if (displayKey.length === 1) {
+          displayKey = displayKey.toUpperCase();
+        }
+        modifiers.push(displayKey);
+        inputEl.value = modifiers.join("+");
+        inputEl.blur(); // Trigger blur to exit recording mode
+      }
+    });
+
+    clearBtnEl.addEventListener("click", () => {
+      inputEl.value = "";
+      inputEl.placeholder = "点击录制快捷键";
+    });
+  }
+
+  setupShortcutRecording(customShortcutAIInput, btnClearShortcutAI, "customShortcutAI");
+  setupShortcutRecording(customShortcutLocalInput, btnClearShortcutLocal, "customShortcutLocal");
+  setupShortcutRecording(customShortcutAutoStartInput, btnClearShortcutAutoStart, "customShortcutAutoStart");
+  setupShortcutRecording(customShortcutAutoStopInput, btnClearShortcutAutoStop, "customShortcutAutoStop");
+  setupShortcutRecording(customShortcutWordAnswerInput, btnClearShortcutWordAnswer, "customShortcutWordAnswer");
 
   document.getElementById("link-chrome-shortcuts").addEventListener("click", (e) => {
     e.preventDefault();

@@ -18,6 +18,20 @@
       });
     });
   }
+  function setDebugState(patch = {}) {
+    chrome.storage.local.set(patch);
+  }
+  function getShortcutString(e) {
+    const modifiers = [];
+    if (e.ctrlKey) modifiers.push("Ctrl");
+    if (e.altKey) modifiers.push("Alt");
+    if (e.shiftKey) modifiers.push("Shift");
+    if (e.metaKey) modifiers.push("Meta");
+    const key = e.key;
+    if (["Control", "Alt", "Shift", "Meta"].includes(key)) return "";
+    modifiers.push(key.length === 1 ? key.toUpperCase() : key);
+    return modifiers.join("+");
+  }
   const BANK_MATCH_THRESHOLD = 0.55; // Minimum similarity to accept a bank match (0-1)
 
   // ==================== STATE ====================
@@ -1165,6 +1179,21 @@
     return prompt;
   }
 
+  function buildWordPrompt(question) {
+    let prompt = "请回答下面这道单词题/术语题，只返回最终答案，不要解释，不要句子，不要 JSON。\n";
+    prompt += "如果是填空，只返回应填内容；多个空用 # 分隔。\n";
+    prompt += "尽量保持为单词、短语或极短术语。\n\n";
+    prompt += `[题型] ${question.type}\n`;
+    prompt += `[题目] ${question.text}\n`;
+    if (question.options && question.options.length > 0) {
+      prompt += "选项：\n";
+      question.options.forEach((opt, i) => {
+        prompt += `${String.fromCharCode(65 + i)}. ${opt.text}\n`;
+      });
+    }
+    return prompt;
+  }
+
   /**
    * Send questions to AI via the background script and get answers.
    */
@@ -1209,6 +1238,34 @@
       setTimeout(() => {
         port.disconnect();
         safeReject(new Error("AI 请求超时"));
+      }, 60000);
+    });
+  }
+
+  async function requestWordAnswer(question) {
+    const prompt = buildWordPrompt(question);
+    return new Promise((resolve, reject) => {
+      const port = chrome.runtime.connect({ name: "ai-auto-answer" });
+      let fullResponse = "";
+      let settled = false;
+      const done = (fn, val) => { if (!settled) { settled = true; fn(val); } };
+      port.postMessage({ action: "REQUEST_AI", text: prompt });
+      port.onMessage.addListener((msg) => {
+        if (msg.action === "chunk") fullResponse += msg.text || "";
+        else if (msg.action === "done") {
+          try { port.disconnect(); } catch (_) {}
+          done(resolve, fullResponse.trim());
+        } else if (msg.action === "error") {
+          try { port.disconnect(); } catch (_) {}
+          done(reject, new Error(msg.error));
+        }
+      });
+      port.onDisconnect.addListener(() => {
+        if (fullResponse.trim()) done(resolve, fullResponse.trim());
+      });
+      setTimeout(() => {
+        try { port.disconnect(); } catch (_) {}
+        done(reject, new Error("AI 请求超时"));
       }, 60000);
     });
   }
@@ -1879,6 +1936,11 @@
     // Create progress panel and show accumulated results
     createProgressPanel();
     updateProgress(results.length, totalQuestions, `正在解答第 ${currentIndex + 1} 题...`);
+    setDebugState({
+      autoAnswerStatus: `正在解答第 ${currentIndex + 1} 题...`,
+      autoAnswerCurrentQuestion: "",
+      autoAnswerCurrentAnswer: ""
+    });
 
     // Show previous answers in the log
     results.forEach(r => {
@@ -1905,6 +1967,11 @@
 
     // Answer the question
     const question = questions[0];
+    setDebugState({
+      autoAnswerStatus: `已识别第 ${currentIndex + 1} 题`,
+      autoAnswerCurrentQuestion: question.text,
+      autoAnswerCurrentAnswer: ""
+    });
     let answerText = null;
     let source = "AI";  // "bank" or "AI"
 
@@ -1942,6 +2009,11 @@
         autoAnswerResults: results,
         autoAnswerSuccessCount: successCount + 1
       });
+      setDebugState({
+        autoAnswerStatus: `第 ${currentIndex + 1} 题已作答`,
+        autoAnswerCurrentQuestion: question.text,
+        autoAnswerCurrentAnswer: answerText
+      });
 
       updateProgress(
         results.length,
@@ -1975,6 +2047,11 @@
         autoAnswerResults: results,
         autoAnswerFailCount: failCount + 1
       });
+      setDebugState({
+        autoAnswerStatus: `第 ${currentIndex + 1} 题未获取到答案`,
+        autoAnswerCurrentQuestion: question.text,
+        autoAnswerCurrentAnswer: ""
+      });
 
       updateProgress(results.length, totalQuestions, `第 ${currentIndex + 1} 题未获取到答案`, logEntry);
       await new Promise(async (r) => setTimeout(r, await getAutoAnswerIntervalMs()));
@@ -1993,6 +2070,49 @@
     }
 
     isRunning = false;
+  }
+
+  async function answerWordQuestion() {
+    const questions = scanQuestions();
+    if (!questions.length) {
+      setDebugState({ autoAnswerStatus: "未识别到题目" });
+      return;
+    }
+    const question = questions[0];
+    setDebugState({
+      autoAnswerStatus: "正在回答单词题...",
+      autoAnswerCurrentQuestion: question.text,
+      autoAnswerCurrentAnswer: ""
+    });
+    try {
+      let answerText = null;
+      const bankResult = searchQuestionBank(question.text);
+      if (bankResult) {
+        answerText = bankResult.answer;
+      }
+      if (!answerText) {
+        answerText = await requestWordAnswer(question);
+      }
+      if (!answerText) {
+        setDebugState({ autoAnswerStatus: "单词题未获取到答案", autoAnswerCurrentAnswer: "" });
+        return;
+      }
+      const freshQuestions = scanQuestions();
+      const target = freshQuestions.length > 0 ? freshQuestions[0] : question;
+      fillAnswer(target, answerText.trim());
+      setDebugState({
+        autoAnswerStatus: "单词题已作答",
+        autoAnswerCurrentQuestion: question.text,
+        autoAnswerCurrentAnswer: answerText.trim()
+      });
+    } catch (err) {
+      console.error("[AutoAnswer] Word answer error:", err);
+      setDebugState({
+        autoAnswerStatus: `单词题失败：${err.message || err}`,
+        autoAnswerCurrentQuestion: question.text,
+        autoAnswerCurrentAnswer: ""
+      });
+    }
   }
 
   /**
@@ -2027,6 +2147,7 @@
     isRunning = false;
     chrome.storage.local.set({
       autoAnswerRunning: false,
+      autoAnswerStatus: "已停止",
       autoAnswerResults: [],
       autoAnswerSuccessCount: 0,
       autoAnswerFailCount: 0,
@@ -2046,9 +2167,18 @@
   // are NOT registered on extension update — only on fresh install.
 
   let lastShortcutTime = 0;
-  window.addEventListener("keydown", function(e) {
-    // Alt+C → start auto-answer
-    if (e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey && e.key === "c") {
+  window.addEventListener("keydown", async function(e) {
+    const configured = await new Promise((resolve) => {
+      chrome.storage.local.get({
+        customShortcutAutoStart: "Alt+C",
+        customShortcutAutoStop: "Alt+V",
+        customShortcutWordAnswer: "Alt+W"
+      }, resolve);
+    });
+    const pressed = getShortcutString(e);
+    if (!pressed) return;
+    // start auto-answer
+    if (pressed === configured.customShortcutAutoStart) {
       e.preventDefault();
       e.stopPropagation();
       const now = Date.now();
@@ -2071,8 +2201,8 @@
       return;
     }
 
-    // Alt+V → stop auto-answer
-    if (e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey && e.key === "v") {
+    // stop auto-answer
+    if (pressed === configured.customShortcutAutoStop) {
       e.preventDefault();
       e.stopPropagation();
       const now = Date.now();
@@ -2085,6 +2215,16 @@
       }
       console.log("[AutoAnswer] Alt+V: Stopping auto-answer!");
       stopAutoAnswer();
+      return;
+    }
+
+    if (pressed === configured.customShortcutWordAnswer) {
+      e.preventDefault();
+      e.stopPropagation();
+      const now = Date.now();
+      if (now - lastShortcutTime < 500) return;
+      lastShortcutTime = now;
+      answerWordQuestion();
       return;
     }
   }, true);
@@ -2112,6 +2252,12 @@
     if (msg.action === "STOP_AUTO_ANSWER") {
       stopAutoAnswer();
       chrome.storage.local.set({ autoAnswerRunning: false });
+      sendResponse({ success: true });
+      return true;
+    }
+
+    if (msg.action === "ANSWER_WORD_QUESTION") {
+      answerWordQuestion();
       sendResponse({ success: true });
       return true;
     }

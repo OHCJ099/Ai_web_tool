@@ -180,14 +180,45 @@
               </div>
 
               <!-- Shortcut Config -->
-              <div class="form-group" style="margin-top: 16px;">
-                <label for="custom-shortcut">网页内自定义快捷键 (Page Shortcut)</label>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <input type="text" id="custom-shortcut" readonly placeholder="点击后在键盘上按下组合键以录制，如 Alt+Q" style="flex: 1; cursor: pointer; caret-color: transparent; background-color: var(--bg-app); font-weight: 500; text-align: center; height: 38px;" class="shortcut-input">
-                  <button type="button" id="btn-clear-shortcut" class="btn btn-secondary" style="padding: 0 16px; height: 38px; white-space: nowrap;">清除</button>
+              <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="custom-shortcut-ai">网页内自定义快捷键 (正常 AI 检索)</label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="custom-shortcut-ai" readonly placeholder="按组合键录制，如 Alt+Z" style="flex: 1; cursor: pointer; caret-color: transparent; background-color: var(--bg-app); font-weight: 500; text-align: center; height: 38px;" class="shortcut-input">
+                    <button type="button" id="btn-clear-shortcut-ai" class="btn btn-secondary" style="padding: 0 12px; height: 38px; white-space: nowrap;">清除</button>
+                  </div>
                 </div>
-                <p class="field-desc">在网页中选中文本后，按下该快捷键组合可立即运行 AI 解析。系统全局快捷键可前往 <a href="#" id="link-chrome-shortcuts" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">chrome://extensions/shortcuts</a> 配置。</p>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="custom-shortcut-local">网页内自定义快捷键 (仅题库检索)</label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="custom-shortcut-local" readonly placeholder="按组合键录制，如 Alt+Q" style="flex: 1; cursor: pointer; caret-color: transparent; background-color: var(--bg-app); font-weight: 500; text-align: center; height: 38px;" class="shortcut-input">
+                    <button type="button" id="btn-clear-shortcut-local" class="btn btn-secondary" style="padding: 0 12px; height: 38px; white-space: nowrap;">清除</button>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="custom-shortcut-auto-start">自动答题开始快捷键</label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="custom-shortcut-auto-start" readonly placeholder="如 Alt+C" style="flex: 1; cursor: pointer; caret-color: transparent; background-color: var(--bg-app); font-weight: 500; text-align: center; height: 38px;" class="shortcut-input">
+                    <button type="button" id="btn-clear-shortcut-auto-start" class="btn btn-secondary" style="padding: 0 12px; height: 38px; white-space: nowrap;">清除</button>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="custom-shortcut-auto-stop">自动答题停止快捷键</label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="custom-shortcut-auto-stop" readonly placeholder="如 Alt+V" style="flex: 1; cursor: pointer; caret-color: transparent; background-color: var(--bg-app); font-weight: 500; text-align: center; height: 38px;" class="shortcut-input">
+                    <button type="button" id="btn-clear-shortcut-auto-stop" class="btn btn-secondary" style="padding: 0 12px; height: 38px; white-space: nowrap;">清除</button>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="custom-shortcut-word-answer">回答单词题快捷键</label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="custom-shortcut-word-answer" readonly placeholder="如 Alt+W" style="flex: 1; cursor: pointer; caret-color: transparent; background-color: var(--bg-app); font-weight: 500; text-align: center; height: 38px;" class="shortcut-input">
+                    <button type="button" id="btn-clear-shortcut-word-answer" class="btn btn-secondary" style="padding: 0 12px; height: 38px; white-space: nowrap;">清除</button>
+                  </div>
+                </div>
               </div>
+              <p class="field-desc" style="margin-top: 8px;">在网页中可自定义检索、自动答题开始/停止、回答单词题快捷键。系统全局快捷键可前往 <a href="#" id="link-chrome-shortcuts" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">chrome://extensions/shortcuts</a> 配置。</p>
             </div>
           </div>
         </div>

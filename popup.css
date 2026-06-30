@@ -251,6 +251,15 @@ body {
   word-break: break-word;
 }
 
+.auto-answer-debug {
+  font-size: 11.5px;
+  color: var(--text-body);
+  line-height: 1.45;
+  max-height: 3.2em;
+  overflow: hidden;
+  word-break: break-word;
+}
+
 .auto-answer-row {
   display: flex;
   align-items: center;
@@ -287,7 +296,14 @@ body {
   accent-color: var(--primary-color);
 }
 
-.auto-answer-toggle {
+.auto-answer-actions {
+  display: grid;
+  grid-template-columns: 1fr 92px;
+  gap: 8px;
+}
+
+.auto-answer-toggle,
+.auto-answer-word {
   width: 100%;
   border: none;
   border-radius: 7px;
@@ -301,6 +317,11 @@ body {
 
 .auto-answer-toggle.running {
   background: var(--error-color);
+}
+
+.auto-answer-word {
+  color: var(--text-body);
+  background: var(--border-color);
 }
 
 .auto-answer-hint {
