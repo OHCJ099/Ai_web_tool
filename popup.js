@@ -26,8 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const autoAnswerInterval = document.getElementById("auto-answer-interval");
   const autoAnswerSubmit = document.getElementById("auto-answer-submit");
   const autoAnswerNext = document.getElementById("auto-answer-next");
-  const btnAutoAnswerStart = document.getElementById("btn-auto-answer-start");
-  const btnAutoAnswerStop = document.getElementById("btn-auto-answer-stop");
+  const btnAutoAnswerToggle = document.getElementById("btn-auto-answer-toggle");
 
   let allPresets = {};
 
@@ -154,7 +153,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const running = !!settings.aiAutoAnswerRunning;
     autoAnswerStatus.textContent = running ? (settings.aiAutoAnswerStatus || "运行中") : (settings.aiAutoAnswerStatus || "就绪");
     autoAnswerStatus.style.color = running ? "#10b981" : "var(--text-muted)";
-    btnAutoAnswerStart.textContent = running ? "继续/重启答题" : "开始连续答题";
+    btnAutoAnswerToggle.textContent = running ? "停止自动答题" : "开始连续答题";
+    btnAutoAnswerToggle.classList.toggle("running", running);
+    btnAutoAnswerToggle.dataset.running = running ? "1" : "0";
   }
 
   async function getActiveTab() {
@@ -185,17 +186,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  btnAutoAnswerStart.addEventListener("click", async () => {
-    await saveAutoAnswerSettings();
-    autoAnswerStatus.textContent = "正在启动...";
-    await sendAutoAnswerMessage("START_AUTO_ANSWER");
-    chrome.storage.local.get({ aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已启动" }, updateAutoAnswerUI);
-  });
-
-  btnAutoAnswerStop.addEventListener("click", async () => {
-    autoAnswerStatus.textContent = "正在停止...";
-    await sendAutoAnswerMessage("STOP_AUTO_ANSWER");
-    chrome.storage.local.get({ aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已停止" }, updateAutoAnswerUI);
+  btnAutoAnswerToggle.addEventListener("click", async () => {
+    const isRunning = btnAutoAnswerToggle.dataset.running === "1";
+    if (isRunning) {
+      autoAnswerStatus.textContent = "正在停止...";
+      await sendAutoAnswerMessage("STOP_AUTO_ANSWER");
+      chrome.storage.local.get({ aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已停止" }, updateAutoAnswerUI);
+    } else {
+      await saveAutoAnswerSettings();
+      autoAnswerStatus.textContent = "正在启动...";
+      await sendAutoAnswerMessage("START_AUTO_ANSWER");
+      chrome.storage.local.get({ aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已启动" }, updateAutoAnswerUI);
+    }
   });
 
   [autoAnswerInterval, autoAnswerSubmit, autoAnswerNext].forEach((el) => {

@@ -21,7 +21,8 @@
   const storageSet = (values) => new Promise((resolve) => chrome.storage.local.set(values, resolve));
 
   function textOf(el) {
-    return (el && (el.innerText || el.textContent || "")).replace(/\s+/g, " ").trim();
+    if (!el) return "";
+    return String(el.innerText || el.textContent || "").replace(/\s+/g, " ").trim();
   }
   function cleanText(s) {
     return String(s || "")
@@ -89,18 +90,31 @@
   function optionLetter(i) { return String.fromCharCode(65 + i); }
   function optionTextFrom(el, fallbackLetter) {
     let t = textOf(el).replace(/^\s*[A-Z]\s*[\.、．)]?\s*/i, "").trim();
-    if (!t && el.labels && el.labels[0]) t = textOf(el.labels[0]);
+    if (!t && el?.labels && el.labels[0]) t = textOf(el.labels[0]);
     return t || fallbackLetter;
   }
 
   function collectOptions(container) {
     const options = [];
     const seen = new Set();
+    const getClickable = (el) => {
+      if (!el) return el;
+      if (el.tagName === "INPUT") {
+        return el.closest("label") || (el.id ? container.querySelector(`label[for="${CSS.escape(el.id)}"]`) : null) || el;
+      }
+      return el.closest(".answerBg,label,li,[role=radio],[role=checkbox],[role=option],button,a") || el;
+    };
     const add = (el, text, letter) => {
       if (!el || seen.has(el)) return;
       if (!visible(el) && el.tagName !== "INPUT") return;
       seen.add(el);
-      options.push({ element: el, text: text || optionTextFrom(el, letter), letter: letter || optionLetter(options.length) });
+      const clickable = getClickable(el);
+      options.push({
+        element: clickable,
+        input: el.tagName === "INPUT" ? el : clickable?.querySelector?.("input[type=radio],input[type=checkbox]") || null,
+        text: text || optionTextFrom(clickable || el, letter),
+        letter: letter || optionLetter(options.length)
+      });
     };
 
     container.querySelectorAll(".answerBg,.option,.choices li,.choice li,[class*=option],[class*=answerBg]").forEach((el) => {
@@ -119,7 +133,7 @@
       add(el, optionTextFrom(el, optionLetter(options.length)), optionLetter(options.length));
     });
 
-    return options.filter((o, i, arr) => i === arr.findIndex(x => x.text === o.text || x.element === o.element)).slice(0, 10);
+    return options.filter((o, i, arr) => i === arr.findIndex(x => x.text === o.text || x.element === o.element || (o.input && x.input === o.input))).slice(0, 10);
   }
 
   function findInputs(container) {
@@ -146,7 +160,7 @@
       if (t && t.length >= 4 && t.length < 1500) return t;
     }
     let raw = textOf(container);
-    for (const o of options) raw = raw.replace(o.text, " ");
+    for (const o of options) raw = raw.replace(String(o.text || ""), " ");
     return cleanText(raw).slice(0, 1500);
   }
 
@@ -225,12 +239,24 @@
 
   function fire(el, type) { el.dispatchEvent(new Event(type, { bubbles: true, cancelable: true })); }
   function clickElement(el) {
+    if (!el) return false;
     el.scrollIntoView?.({ block: "center", inline: "center" });
     el.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
     el.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window }));
     el.click?.();
     el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
     fire(el, "change");
+    return true;
+  }
+
+  function isOptionSelected(option) {
+    const input = option.input || (option.element?.matches?.("input[type=radio],input[type=checkbox]") ? option.element : null);
+    if (input) return !!input.checked;
+    const el = option.element;
+    if (!el) return false;
+    const attr = `${el.getAttribute("aria-checked") || ""} ${el.getAttribute("aria-selected") || ""}`.toLowerCase();
+    const cls = String(el.className || "").toLowerCase();
+    return attr.includes("true") || /selected|checked|active|current|on|已选/.test(cls);
   }
 
   function fillChoice(question, answer) {
@@ -243,12 +269,24 @@
     for (const option of question.options) {
       const should = wanted.has(option.letter);
       const el = option.element;
+      const input = option.input || (el?.matches?.("input[type=radio],input[type=checkbox]") ? el : null);
       if (!should && question.type !== "multi") continue;
-      if (el.tagName === "INPUT") {
-        if (el.type === "radio" && should) { el.checked = true; fire(el, "input"); fire(el, "change"); changed = true; }
-        if (el.type === "checkbox" && el.checked !== should) { clickElement(el); changed = true; }
+      if (input) {
+        if (input.type === "radio" && should) {
+          if (!input.checked) clickElement(el !== input ? el : input);
+          input.checked = true;
+          fire(input, "input"); fire(input, "change");
+          changed = true;
+        }
+        if (input.type === "checkbox" && input.checked !== should) {
+          clickElement(el !== input ? el : input);
+          input.checked = should;
+          fire(input, "input"); fire(input, "change");
+          changed = true;
+        }
       } else if (should) {
-        clickElement(el); changed = true;
+        if (!isOptionSelected(option)) clickElement(el);
+        changed = true;
       }
       if (should && question.type !== "multi") break;
     }

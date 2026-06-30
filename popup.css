@@ -287,29 +287,20 @@ body {
   accent-color: var(--primary-color);
 }
 
-.auto-answer-actions {
-  display: grid;
-  grid-template-columns: 1fr 72px;
-  gap: 8px;
-}
-
-.auto-answer-actions button {
+.auto-answer-toggle {
+  width: 100%;
   border: none;
   border-radius: 7px;
   padding: 8px 10px;
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
-}
-
-#btn-auto-answer-start {
   color: #fff;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
 }
 
-#btn-auto-answer-stop {
-  color: var(--text-body);
-  background: var(--border-color);
+.auto-answer-toggle.running {
+  background: var(--error-color);
 }
 
 .auto-answer-hint {
