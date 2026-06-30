@@ -159,6 +159,10 @@
   }
 
   function findQuestionText(container, options) {
+    if (container.classList?.contains("questionLi")) {
+      const cxText = extractChaoxingQuestionText(container);
+      if (cxText) return cxText;
+    }
     const selectors = [".mark_name", ".question-title", ".subject-title", ".title", ".stem", "[class*=question-title]", "[class*=mark]", "h1", "h2", "h3", "p"];
     for (const sel of selectors) {
       const el = container.querySelector(sel);
@@ -171,8 +175,11 @@
   }
 
   function scanQuestions() {
+    const chaoxingQuestions = scanChaoxingQuestions();
+    if (chaoxingQuestions.length) return chaoxingQuestions;
+
     const roots = [];
-    document.querySelectorAll(".questionLi,.question-item,.question,.subject,.exam-question,.topic-item,[class*=question],[class*=subject],[class*=topic]").forEach(el => {
+    document.querySelectorAll(".question-item,.question,.exam-question,.topic-item,[class*=question]").forEach(el => {
       if (visible(el) && (el.querySelector("input[type=radio],input[type=checkbox],textarea,input[type=text],[contenteditable=true],.answerBg,.num_option,[role=radio],[role=checkbox]") || /题|question|subject|topic/i.test(`${el.className || ""} ${el.id || ""}`))) roots.push(el);
     });
     if (!roots.length) {
@@ -194,6 +201,77 @@
       questions.push({ element: root, text, type: inferType(root, options, inputs), options, inputs });
     }
     return questions;
+  }
+
+  function extractChaoxingQuestionText(container) {
+    const title = container.querySelector(".mark_name");
+    if (!title) return "";
+    const clone = title.cloneNode(true);
+    clone.querySelectorAll(".colorShallow,script,style").forEach((el) => el.remove());
+    let text = textOf(clone);
+    text = text
+      .replace(/^\s*\d+\s*[\.、．)]?\s*/, "")
+      .replace(/[（(]\s*(单选题|多选题|判断题|填空题|简答题|综合题)[^）)]*[）)]/g, "")
+      .replace(/\s*(下一题|上一题|提交|确定|取消|返回|退出|答题卡|已作答|未作答).*$/g, "")
+      .trim();
+    return text.slice(0, 1500);
+  }
+
+  function getChaoxingQid(container) {
+    return container.getAttribute?.("data") ||
+      container.querySelector?.("#questionId")?.value ||
+      container.querySelector?.("[name=questionId]")?.value ||
+      document.querySelector("#questionId")?.value ||
+      "";
+  }
+
+  function getChaoxingType(container, options, inputs) {
+    const qid = getChaoxingQid(container);
+    const typeValue = qid ? (container.querySelector?.(`input[name="type${CSS.escape(qid)}"]`) || document.querySelector(`input[name="type${CSS.escape(qid)}"]`))?.value : "";
+    const typeName = qid ? (container.querySelector?.(`#typeName${CSS.escape(qid)}`) || document.querySelector(`#typeName${CSS.escape(qid)}`))?.value || "" : "";
+    if (typeValue === "1" || /多选/.test(typeName) || container.querySelector(".addMultipleChoice,.num_option_dx,.multioption")) return "multi";
+    if (typeValue === "3" || /判断/.test(typeName)) return "judge";
+    if (typeValue === "2" || typeValue === "9" || typeValue === "10" || typeValue === "4" || typeValue === "5" || typeValue === "6" || typeValue === "7" || typeValue === "8" || typeValue === "18" || /填空|简答|问答|论述/.test(typeName)) return "fill";
+    if (typeValue === "0" || /单选/.test(typeName)) return "single";
+    return inferType(container, options, inputs);
+  }
+
+  function scanChaoxingQuestions() {
+    const questions = [];
+    document.querySelectorAll(".questionLi").forEach((container) => {
+      if (!visible(container)) return;
+      const text = extractChaoxingQuestionText(container);
+      if (!text || text.length < 2) return;
+      const options = collectChaoxingOptions(container);
+      const inputs = findInputs(container);
+      const qid = getChaoxingQid(container);
+      const hasAnswerField = !!qid && !!(container.querySelector?.(`#answer${CSS.escape(qid)},[name="answer${CSS.escape(qid)}"],[name^="answerEditor${CSS.escape(qid)}"]`) || document.querySelector(`#answer${CSS.escape(qid)},[name="answer${CSS.escape(qid)}"],[name^="answerEditor${CSS.escape(qid)}"]`));
+      if (!options.length && !inputs.length && !hasAnswerField) return;
+      questions.push({
+        element: container,
+        text,
+        type: getChaoxingType(container, options, inputs),
+        options,
+        inputs
+      });
+    });
+    return questions;
+  }
+
+  function collectChaoxingOptions(container) {
+    return Array.from(container.querySelectorAll(".answerBg"))
+      .map((bg, i) => {
+        const marker = bg.querySelector(".addChoice,.addMultipleChoice,.num_option,.num_option_dx");
+        const letter = (marker?.getAttribute("data") || marker?.textContent || optionLetter(i)).trim().match(/[A-J]/i)?.[0]?.toUpperCase() || optionLetter(i);
+        const text = textOf(bg).replace(new RegExp(`^\\s*${letter}\\s*[\\.、．)]?\\s*`, "i"), "").trim() || letter;
+        return {
+          element: bg,
+          input: marker || null,
+          text,
+          letter
+        };
+      })
+      .filter((option) => option.letter && /^[A-J]$/.test(option.letter));
   }
 
   function buildPrompt(question) {
