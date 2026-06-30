@@ -265,6 +265,7 @@
       const idx = answer === "错" ? 1 : 0;
       if (question.options[idx]) wanted.add(question.options[idx].letter);
     }
+    if (fillChaoxingChoice(question, wanted)) return true;
     let changed = false;
     for (const option of question.options) {
       const should = wanted.has(option.letter);
@@ -291,6 +292,62 @@
       if (should && question.type !== "multi") break;
     }
     return changed;
+  }
+
+  function fillChaoxingChoice(question, wanted) {
+    const qid =
+      question.element?.getAttribute?.("data") ||
+      question.element?.querySelector?.(".addChoice,.addMultipleChoice,.num_option,.num_option_dx")?.getAttribute("qid") ||
+      document.querySelector("#questionId")?.value ||
+      "";
+    if (!qid) return false;
+
+    const choiceNodes = Array.from(question.element?.querySelectorAll?.(`.choice${CSS.escape(qid)}, .addChoice[qid="${CSS.escape(qid)}"], .addMultipleChoice[qid="${CSS.escape(qid)}"], .num_option[qid="${CSS.escape(qid)}"], .num_option_dx[qid="${CSS.escape(qid)}"]`) || []);
+    if (!choiceNodes.length) return false;
+
+    const isMulti = question.type === "multi";
+    let applied = false;
+    for (const node of choiceNodes) {
+      const letter = (node.getAttribute("data") || textOf(node)).trim().match(/[A-J]/i)?.[0]?.toUpperCase();
+      const should = wanted.has(letter);
+      const parent = node.closest(".answerBg") || node.parentElement;
+      if (isMulti) {
+        node.classList.toggle("check_answer_dx", should);
+      } else {
+        node.classList.toggle("check_answer", should);
+        node.classList.remove("check_answer_dx");
+      }
+      parent?.setAttribute("aria-checked", should ? "true" : "false");
+      parent?.setAttribute("aria-pressed", should ? "true" : "false");
+      if (should) {
+        clickElement(parent || node);
+        // Some Chaoxing pages toggle on click; force the final state again after the page handler.
+        if (isMulti) node.classList.add("check_answer_dx");
+        else node.classList.add("check_answer");
+        parent?.setAttribute("aria-checked", "true");
+        parent?.setAttribute("aria-pressed", "true");
+        applied = true;
+      }
+    }
+
+    const answerValue = choiceNodes
+      .filter((node) => isMulti ? node.classList.contains("check_answer_dx") : node.classList.contains("check_answer"))
+      .map((node) => (node.getAttribute("data") || textOf(node)).trim().match(/[A-J]/i)?.[0]?.toUpperCase() || "")
+      .filter(Boolean)
+      .join("");
+
+    const hidden = document.getElementById(`answer${qid}`) || question.element?.querySelector?.(`#answer${CSS.escape(qid)}`);
+    if (hidden) {
+      hidden.value = answerValue;
+      fire(hidden, "input");
+      fire(hidden, "change");
+    }
+    const isAnswered = document.getElementById("isAnswered");
+    if (isAnswered && answerValue) {
+      isAnswered.value = "true";
+      fire(isAnswered, "change");
+    }
+    return applied && !!answerValue;
   }
 
   function setValue(el, value) {
@@ -397,6 +454,10 @@
       const results = Array.isArray(settings.aiAutoAnswerResults) ? settings.aiAutoAnswerResults.concat(result).slice(-200) : [result];
       await storageSet({ aiAutoAnswerResults: results, aiAutoAnswerLastKey: key });
       await setStatus(`${ok ? "已作答" : "填写可能失败"}：${answer}（${source}）`);
+      if (!ok) {
+        await storageSet({ aiAutoAnswerRunning: false });
+        return;
+      }
       if (settings.aiAutoAnswerAutoSubmit) {
         const submit = findSubmitButton();
         if (submit) { await sleep(250); clickElement(submit); await setStatus("已点击提交/保存"); }
