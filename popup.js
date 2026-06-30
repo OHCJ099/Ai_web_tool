@@ -22,6 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnOpenOptions = document.getElementById("btn-open-options");
   const popupPresetSelect = document.getElementById("popup-preset-select");
   const popupSupercopyToggle = document.getElementById("popup-supercopy-toggle");
+  const autoAnswerStatus = document.getElementById("auto-answer-status");
+  const autoAnswerInterval = document.getElementById("auto-answer-interval");
+  const autoAnswerSubmit = document.getElementById("auto-answer-submit");
+  const autoAnswerNext = document.getElementById("auto-answer-next");
+  const btnAutoAnswerStart = document.getElementById("btn-auto-answer-start");
+  const btnAutoAnswerStop = document.getElementById("btn-auto-answer-stop");
 
   let allPresets = {};
 
@@ -63,11 +69,17 @@ document.addEventListener("DOMContentLoaded", () => {
       presets: INITIAL_PRESETS,
       currentPreset: "siliconflow-deepseek",
       enableThinking: false,
-      enableSuperCopy: false
+      enableSuperCopy: false,
+      aiAutoAnswerRunning: false,
+      aiAutoAnswerIntervalMs: 1500,
+      aiAutoAnswerAutoSubmit: true,
+      aiAutoAnswerAutoNext: true,
+      aiAutoAnswerStatus: "就绪"
     }, (settings) => {
       // Update UI Status
       updateStatusUI(settings);
       popupSupercopyToggle.checked = settings.enableSuperCopy || false;
+      updateAutoAnswerUI(settings);
 
       // Get presets from storage
       allPresets = settings.presets;
@@ -134,6 +146,75 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.local.set({ enableSuperCopy: popupSupercopyToggle.checked });
   });
 
+  function updateAutoAnswerUI(settings) {
+    if (!autoAnswerStatus) return;
+    autoAnswerInterval.value = settings.aiAutoAnswerIntervalMs || 1500;
+    autoAnswerSubmit.checked = settings.aiAutoAnswerAutoSubmit !== false;
+    autoAnswerNext.checked = settings.aiAutoAnswerAutoNext !== false;
+    const running = !!settings.aiAutoAnswerRunning;
+    autoAnswerStatus.textContent = running ? (settings.aiAutoAnswerStatus || "运行中") : (settings.aiAutoAnswerStatus || "就绪");
+    autoAnswerStatus.style.color = running ? "#10b981" : "var(--text-muted)";
+    btnAutoAnswerStart.textContent = running ? "继续/重启答题" : "开始连续答题";
+  }
+
+  async function getActiveTab() {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    return tab;
+  }
+
+  async function sendAutoAnswerMessage(action) {
+    const tab = await getActiveTab();
+    if (!tab || !tab.id || /^(chrome|edge|about):/i.test(tab.url || "")) {
+      autoAnswerStatus.textContent = "当前页面不支持注入脚本";
+      return;
+    }
+    try {
+      await chrome.tabs.sendMessage(tab.id, { action });
+    } catch (err) {
+      await chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: ["content.js", "auto-answer.js"] });
+      await chrome.tabs.sendMessage(tab.id, { action });
+    }
+  }
+
+  async function saveAutoAnswerSettings() {
+    const interval = Math.max(300, Number(autoAnswerInterval.value) || 1500);
+    await chrome.storage.local.set({
+      aiAutoAnswerIntervalMs: interval,
+      aiAutoAnswerAutoSubmit: autoAnswerSubmit.checked,
+      aiAutoAnswerAutoNext: autoAnswerNext.checked
+    });
+  }
+
+  btnAutoAnswerStart.addEventListener("click", async () => {
+    await saveAutoAnswerSettings();
+    autoAnswerStatus.textContent = "正在启动...";
+    await sendAutoAnswerMessage("START_AUTO_ANSWER");
+    chrome.storage.local.get({ aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已启动" }, updateAutoAnswerUI);
+  });
+
+  btnAutoAnswerStop.addEventListener("click", async () => {
+    autoAnswerStatus.textContent = "正在停止...";
+    await sendAutoAnswerMessage("STOP_AUTO_ANSWER");
+    chrome.storage.local.get({ aiAutoAnswerRunning: false, aiAutoAnswerStatus: "已停止" }, updateAutoAnswerUI);
+  });
+
+  [autoAnswerInterval, autoAnswerSubmit, autoAnswerNext].forEach((el) => {
+    el.addEventListener("change", saveAutoAnswerSettings);
+  });
+
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== "local") return;
+    if (changes.aiAutoAnswerRunning || changes.aiAutoAnswerStatus || changes.aiAutoAnswerIntervalMs || changes.aiAutoAnswerAutoSubmit || changes.aiAutoAnswerAutoNext) {
+      chrome.storage.local.get({
+        aiAutoAnswerRunning: false,
+        aiAutoAnswerIntervalMs: 1500,
+        aiAutoAnswerAutoSubmit: true,
+        aiAutoAnswerAutoNext: true,
+        aiAutoAnswerStatus: "就绪"
+      }, updateAutoAnswerUI);
+    }
+  });
+
   // Run initial loading
   initPopup();
 
@@ -146,3 +227,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+

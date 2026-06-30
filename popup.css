@@ -238,3 +238,81 @@ body {
 .preset-switch-card select:focus {
   border-color: var(--primary-color);
 }
+
+/* Auto answer controls */
+.auto-answer-card {
+  gap: 7px;
+}
+
+.auto-answer-status {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.auto-answer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.auto-answer-row input[type="number"] {
+  width: 96px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-body);
+  outline: none;
+}
+
+.auto-answer-check {
+  display: flex !important;
+  align-items: center;
+  gap: 7px;
+  margin: 0 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--text-body) !important;
+  cursor: pointer;
+}
+
+.auto-answer-check input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary-color);
+}
+
+.auto-answer-actions {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+  gap: 8px;
+}
+
+.auto-answer-actions button {
+  border: none;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#btn-auto-answer-start {
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+#btn-auto-answer-stop {
+  color: var(--text-body);
+  background: var(--border-color);
+}
+
+.auto-answer-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+}

@@ -13,7 +13,8 @@ const DEFAULTS = {
   fontSize: "15",
   fontWeight: "400",
   fontOpacity: "100",
-  customShortcut: "Alt+Z",
+  customShortcutAI: "Alt+Z",
+  customShortcutLocal: "Alt+Q",
   enableSuperCopy: false
 };
 
@@ -97,18 +98,39 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 // [Flow3 Fix] Handle keyboard shortcut command
 chrome.commands.onCommand.addListener((command) => {
-  if (command === "trigger-ai") {
+  if (command === "trigger-ai" || command === "trigger-local-search") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0] && tabs[0].id) {
         chrome.tabs.sendMessage(tabs[0].id, {
-          action: "TRIGGER_AI_FROM_SHORTCUT"
+          action: command === "trigger-ai" ? "TRIGGER_AI_FROM_SHORTCUT" : "TRIGGER_LOCAL_SEARCH_FROM_SHORTCUT"
         }).catch(err => {
           console.log("Content script not ready for shortcut:", err);
         });
       }
     });
+    return;
+  }
+
+  if (command === "toggle-auto-answer" || command === "stop-auto-answer") {
+    const action = command === "toggle-auto-answer" ? "START_AUTO_ANSWER" : "STOP_AUTO_ANSWER";
+    sendAutoAnswerCommand(action);
   }
 });
+
+async function sendAutoAnswerCommand(action) {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab || !tab.id || !tab.url || /^(chrome|edge|about):/i.test(tab.url)) return;
+  try {
+    await chrome.tabs.sendMessage(tab.id, { action });
+  } catch (err) {
+    try {
+      await chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: ["content.js", "auto-answer.js"] });
+      await chrome.tabs.sendMessage(tab.id, { action });
+    } catch (injectErr) {
+      console.warn("AI Auto Answer: failed to inject/start", injectErr);
+    }
+  }
+}
 
 // Handle incoming connections from Content Script
 chrome.runtime.onConnect.addListener((port) => {
@@ -619,3 +641,4 @@ async function fetchModelsFromApi(settings) {
   models.sort();
   return models;
 }
+
