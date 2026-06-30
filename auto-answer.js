@@ -1180,9 +1180,9 @@
   }
 
   function buildWordPrompt(question) {
-    let prompt = "请回答下面这道单词题/术语题，只返回最终答案，不要解释，不要句子，不要 JSON。\n";
+    let prompt = "请回答下面这道题，只返回最终答案，不要解释，不要句子，不要 JSON。\n";
     prompt += "如果是填空，只返回应填内容；多个空用 # 分隔。\n";
-    prompt += "尽量保持为单词、短语或极短术语。\n\n";
+    prompt += "尽量精简，多个空用 # 分隔。\n\n";
     prompt += `[题型] ${question.type}\n`;
     prompt += `[题目] ${question.text}\n`;
     if (question.options && question.options.length > 0) {
@@ -2080,7 +2080,7 @@
     }
     const question = questions[0];
     setDebugState({
-      autoAnswerStatus: "正在回答单词题...",
+      autoAnswerStatus: "正在单次作答...",
       autoAnswerCurrentQuestion: question.text,
       autoAnswerCurrentAnswer: ""
     });
@@ -2094,21 +2094,21 @@
         answerText = await requestWordAnswer(question);
       }
       if (!answerText) {
-        setDebugState({ autoAnswerStatus: "单词题未获取到答案", autoAnswerCurrentAnswer: "" });
+        setDebugState({ autoAnswerStatus: "单次作答未获取到答案", autoAnswerCurrentAnswer: "" });
         return;
       }
       const freshQuestions = scanQuestions();
       const target = freshQuestions.length > 0 ? freshQuestions[0] : question;
       fillAnswer(target, answerText.trim());
       setDebugState({
-        autoAnswerStatus: "单词题已作答",
+        autoAnswerStatus: "单次作答完成",
         autoAnswerCurrentQuestion: question.text,
         autoAnswerCurrentAnswer: answerText.trim()
       });
     } catch (err) {
       console.error("[AutoAnswer] Word answer error:", err);
       setDebugState({
-        autoAnswerStatus: `单词题失败：${err.message || err}`,
+        autoAnswerStatus: `单次作答失败：${err.message || err}`,
         autoAnswerCurrentQuestion: question.text,
         autoAnswerCurrentAnswer: ""
       });

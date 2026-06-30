@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
     autoAnswerStatus.style.color = running ? "#10b981" : "var(--text-muted)";
     autoAnswerQuestion.textContent = `题目：${settings.autoAnswerCurrentQuestion || "-"}`;
     autoAnswerAnswer.textContent = `答案：${settings.autoAnswerCurrentAnswer || "-"}`;
-    autoAnswerHint.textContent = `开始：${settings.customShortcutAutoStart || "Alt+C"}  停止：${settings.customShortcutAutoStop || "Alt+V"}  单词：${settings.customShortcutWordAnswer || "Alt+W"}`;
+    autoAnswerHint.textContent = `开始：${settings.customShortcutAutoStart || "Alt+C"}  停止：${settings.customShortcutAutoStop || "Alt+V"}  单次：${settings.customShortcutWordAnswer || "Alt+W"}`;
     btnAutoAnswerToggle.textContent = running ? "停止自动答题" : "开始连续答题";
     btnAutoAnswerToggle.classList.toggle("running", running);
     btnAutoAnswerToggle.dataset.running = running ? "1" : "0";
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   btnWordAnswer.addEventListener("click", async () => {
-    autoAnswerStatus.textContent = "正在回答单词题...";
+    autoAnswerStatus.textContent = "正在单次作答...";
     await sendAutoAnswerMessage("ANSWER_WORD_QUESTION");
   });
 
