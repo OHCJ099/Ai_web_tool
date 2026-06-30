@@ -324,6 +324,53 @@
   }
 
   function fire(el, type) { el.dispatchEvent(new Event(type, { bubbles: true, cancelable: true })); }
+
+  function injectPageScript(source) {
+    const script = document.createElement("script");
+    script.textContent = source;
+    (document.documentElement || document.head || document.body).appendChild(script);
+    script.remove();
+  }
+
+  function setNativeValue(el, value) {
+    if (!el) return false;
+    const proto = el.tagName === "TEXTAREA" ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+    try { el.focus?.(); } catch (_) {}
+    if (setter) setter.call(el, value); else el.value = value;
+    fire(el, "input"); fire(el, "change"); fire(el, "blur");
+    return true;
+  }
+
+  function setUEditorInPage(editorId, value) {
+    if (!editorId) return;
+    injectPageScript(`(() => {
+      const id = ${JSON.stringify(editorId)};
+      const value = ${JSON.stringify(String(value || ""))};
+      const html = /<[^>]+>/.test(value) ? value : "<p>" + value.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])) + "</p>";
+      try {
+        if (window.UE && typeof window.UE.getEditor === "function") {
+          const editor = window.UE.getEditor(id);
+          if (editor) {
+            const apply = () => {
+              try { editor.setContent(html); } catch (_) { editor.setContent(value); }
+              try { editor.sync(); } catch (_) {}
+            };
+            if (typeof editor.ready === "function") editor.ready(apply); else apply();
+          }
+        }
+      } catch (e) {}
+      try {
+        const el = document.getElementById(id) || document.querySelector("[name='" + CSS.escape(id) + "']");
+        if (el && "value" in el) {
+          el.value = value;
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      } catch (e) {}
+    })();`);
+  }
+
   function clickElement(el) {
     if (!el) return false;
     el.scrollIntoView?.({ block: "center", inline: "center" });
@@ -444,7 +491,10 @@
         const doc = el.contentDocument || el.contentWindow?.document;
         if (doc?.body) {
           doc.body.innerHTML = `<p>${String(value).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</p>`;
-          fire(doc.body, "input"); fire(doc.body, "change"); return true;
+          doc.body.focus?.();
+          doc.body.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: String(value) }));
+          fire(doc.body, "input"); fire(doc.body, "change"); fire(doc.body, "blur");
+          return true;
         }
       } catch (_) {}
       return false;
@@ -452,12 +502,7 @@
     if (el.isContentEditable) {
       el.focus(); el.textContent = value; fire(el, "input"); fire(el, "change"); fire(el, "blur"); return true;
     }
-    const proto = el.tagName === "TEXTAREA" ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
-    const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
-    el.focus();
-    if (setter) setter.call(el, value); else el.value = value;
-    fire(el, "input"); fire(el, "change"); fire(el, "blur");
-    return true;
+    return setNativeValue(el, value);
   }
 
   function fillAnswer(question, answer) {
@@ -484,13 +529,19 @@
     const cxType = (document.querySelector(`input[name="type${CSS.escape(qid)}"]`) || question.element?.querySelector?.(`input[name="type${CSS.escape(qid)}"]`))?.value || "";
     const parts = String(answer || "").split(/\s*(?:#|\||；|;|\n)\s*/).filter(Boolean);
     let changed = false;
+    const editorIds = new Set();
 
     // 学习通填空题通常是 answerEditor{qid}1/2...，提交前会同步成 JSON。
-    const blankEditors = Array.from(document.querySelectorAll(`textarea[name^="answerEditor${CSS.escape(qid)}"],iframe[id^="answerEditor${CSS.escape(qid)}"]`));
+    const blankEditors = Array.from(document.querySelectorAll(`textarea[name^="answerEditor${CSS.escape(qid)}"],textarea[id^="answerEditor${CSS.escape(qid)}"],iframe[id^="answerEditor${CSS.escape(qid)}"],iframe[id*="answerEditor${CSS.escape(qid)}"]`));
+    blankEditors.forEach((el) => {
+      if (el.id) editorIds.add(el.id);
+      if (el.name) editorIds.add(el.name);
+    });
     if (blankEditors.length) {
       const answerItems = [];
       blankEditors.forEach((el, i) => {
         const value = parts[i] || answer;
+        setUEditorInPage(el.id || el.name, value);
         setValue(el, value);
         answerItems.push({ name: String(i + 1), content: value });
         changed = true;
@@ -504,14 +555,34 @@
 
     // 简答/论述等富文本题通常直接使用 answer{qid} 编辑器/textarea。
     if (!changed) {
-      const directEditors = Array.from(document.querySelectorAll(`textarea#answer${CSS.escape(qid)},textarea[name="answer${CSS.escape(qid)}"],iframe#answer${CSS.escape(qid)},[contenteditable=true]`))
-        .filter((el) => question.element.contains(el) || el.id === `answer${qid}` || el.name === `answer${qid}`);
+      const directEditors = Array.from(document.querySelectorAll(`textarea#answer${CSS.escape(qid)},textarea[name="answer${CSS.escape(qid)}"],iframe#answer${CSS.escape(qid)},iframe[id*="answer${CSS.escape(qid)}"],[contenteditable=true]`))
+        .filter((el) => question.element.contains(el) || el.id === `answer${qid}` || el.name === `answer${qid}` || String(el.id || "").includes(`answer${qid}`));
       if (directEditors.length) {
         directEditors.forEach((el) => {
+          if (el.id) editorIds.add(el.id);
+          if (el.name) editorIds.add(el.name);
+          setUEditorInPage(el.id || el.name || `answer${qid}`, answer);
           setValue(el, answer);
           changed = true;
         });
       }
+    }
+
+    // UEditor 的可编辑 iframe 常常不在题目 DOM 内，真实 editorId 来自隐藏 textarea。
+    if (!changed || editorIds.size) {
+      const candidateIds = new Set(editorIds);
+      candidateIds.add(`answer${qid}`);
+      const blankNum = Number((document.querySelector(`input[name="${CSS.escape(qid)}blankNum"],#${CSS.escape(qid)}blankNum`) || {}).value || 0);
+      for (let i = 1; i <= blankNum; i++) candidateIds.add(`answerEditor${qid}${i}`);
+      candidateIds.forEach((id, idx) => {
+        const value = parts[idx] || answer;
+        setUEditorInPage(id, value);
+        const related = document.getElementById(id) || document.querySelector(`[name="${CSS.escape(id)}"]`);
+        if (related) {
+          setValue(related, value);
+          changed = true;
+        }
+      });
     }
 
     // 如果只有隐藏域，也写入学习通可提交的值：填空为 JSON，简答为 HTML/文本。
