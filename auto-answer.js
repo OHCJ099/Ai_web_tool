@@ -1600,6 +1600,7 @@
       <div class="aa-header">
         <span class="aa-title">🚀 自动答题中</span>
         <div class="aa-header-btns">
+          <button class="aa-copy" title="复制状态和答案">复制</button>
           <button class="aa-minimize" title="最小化">─</button>
           <button class="aa-close" title="停止">✕</button>
         </div>
@@ -1621,6 +1622,22 @@
     miniBtn.innerHTML = ``;
     miniBtn.style.display = "flex";
     shadowRoot.appendChild(miniBtn);
+
+    // Minimize button
+    shadowRoot.querySelector(".aa-copy").addEventListener("click", async () => {
+      const statusText = shadowRoot.querySelector(".aa-status")?.textContent || "";
+      const logText = Array.from(shadowRoot.querySelectorAll(".aa-log-entry")).map(el => el.textContent || "").join("\n");
+      const text = [statusText, logText].filter(Boolean).join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        const btn = shadowRoot.querySelector(".aa-copy");
+        const old = btn.textContent;
+        btn.textContent = "已复制";
+        setTimeout(() => { btn.textContent = old; }, 1200);
+      } catch (e) {
+        console.warn("[AutoAnswer] copy failed", e);
+      }
+    });
 
     // Minimize button
     shadowRoot.querySelector(".aa-minimize").addEventListener("click", () => {
@@ -1733,11 +1750,11 @@
       }
       .aa-title { font-weight: 600; font-size: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
       .aa-header-btns { display: flex; gap: 4px; }
-      .aa-minimize, .aa-close {
+      .aa-copy, .aa-minimize, .aa-close {
         background: none;
         border: none;
         color: #fff;
-        font-size: 16px;
+        font-size: 12px;
         cursor: pointer;
         padding: 2px 8px;
         border-radius: 4px;
@@ -1745,9 +1762,20 @@
         line-height: 1;
         transition: all 0.2s ease;
       }
-      .aa-minimize:hover, .aa-close:hover { opacity: 1; background: rgba(255,255,255,0.25); }
-      .aa-body { padding: 16px; }
-      .aa-status { margin-bottom: 12px; font-weight: 500; }
+      .aa-minimize, .aa-close { font-size: 16px; }
+      .aa-copy:hover, .aa-minimize:hover, .aa-close:hover { opacity: 1; background: rgba(255,255,255,0.25); }
+      .aa-body {
+        padding: 16px;
+        user-select: text !important;
+        -webkit-user-select: text !important;
+      }
+      .aa-status {
+        margin-bottom: 12px;
+        font-weight: 500;
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        cursor: text;
+      }
       .aa-progress-bar {
         height: 6px;
         background: rgba(229,231,235,0.6);
@@ -1774,10 +1802,16 @@
         color: #4b5563;
         border-top: 1px solid rgba(243,244,246,0.6);
         padding-top: 8px;
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        cursor: text;
       }
       .aa-log-entry {
         padding: 3px 0;
         border-bottom: 1px solid rgba(249,250,251,0.5);
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        cursor: text;
       }
       .aa-log-entry:last-child { border-bottom: none; }
 

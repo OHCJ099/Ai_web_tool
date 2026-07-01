@@ -258,6 +258,9 @@ body {
   max-height: 3.2em;
   overflow: hidden;
   word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
 }
 
 .auto-answer-row {
