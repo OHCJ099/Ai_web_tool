@@ -1,266 +1,873 @@
-一. 单选题（共 20 题，30.0 分）
-1. (单选题, 1.5 分) 以下符号哪个是在顺序图中表示返回消息的符号(        )。
+1. (填空题, 1.0 分) 在AOP术语中，____是指将切面应用到目标对象生成代理对象的过程。
+我的答案:织入
+2. (填空题, 1.0 分) Spring AOP中，通过____注解可以启用自动代理功能。
+我的答案:@EnableAspectJAutoProxy; EnableAspectJAutoProxy
+3. (填空题, 1.0 分) 在MyBatis中，通过____获取SqlSession实例。
+我的答案:SqlSessionFactory
+4. (填空题, 1.0 分) 为了开启驼峰命名自动映射，需要在settings中设置____为true。
+我的答案:mapUnderscoreToCamelCase
+5. (填空题, 1.0 分) MyBatis中，Mapper接口的实例是从____中获得的。
+我的答案:SqlSession
+6. (填空题, 1.0 分) 在核心配置文件中，用于指定映射器的元素是____。
+我的答案:mappers
+7. (填空题, 1.0 分) 要启用自动生成主键，应设置 useGeneratedKeys="true"，并通过 ____属性指定主键名。
+我的答案:keyProperty
+8. (填空题, 1.0 分) MyBatis 的 where 元素会自动去除条件片段开头多余的 ____ 关键字。
+我的答案:AND 或 OR
+9. (填空题, 1.0 分) MyBatis 中，用于处理数据库字段名与 Java 对象属性名不一致的映射配置是____。
+我的答案:<resultMap>; resultMap
+10. (填空题, 1.0 分) MyBatis 的____接口是 MyBatis 的核心接口，用于执行 SQL 命令、获取映射器和管理事务。
+我的答案:SqlSession
+11. (填空题, 1.0 分) 在 MyBatis 映射文件中，<select>标签的____属性用于指定查询结果对应的 Java 类型。
+我的答案:resultType
+12. (填空题, 1.0 分) MyBatis 中，默认启用且作用域为同一个 SqlSession 的是 ____ 缓存。
+我的答案:一级
+13. (填空题, 1.0 分) MyBatis 中，需要显式配置且作用域为 Mapper 命名空间的是 ____ 缓存。
+我的答案:二级
+14. (填空题, 1.0 分) MyBatis 动态 SQL 中，用于遍历集合并生成重复 SQL 片段的元素是 ____。
+我的答案:foreach
+15. (填空题, 1.0 分) 在 MyBatis 的 foreach 元素中，用于指定待遍历集合名称的属性是 ____。
+我的答案:collection
+16. (填空题, 1.0 分) MyBatis 动态 SQL 中，用于生成 WHERE 子句并处理开头多余 AND/OR 的元素是 ____。
+我的答案:where
+17. (填空题, 1.0 分) MyBatis 动态 SQL 中，用于生成 SET 子句并去除末尾多余逗号的元素是 ____。
+我的答案:set
+18. (填空题, 1.0 分) MyBatis 的 resultMap 中，用于映射一对一关联对象的元素是 ____。
+我的答案:association
+19. (填空题, 1.0 分) MyBatis 的 resultMap 中，用于映射一对多关联集合的元素是 ____。
+我的答案:collection
+20. (填空题, 1.0 分) MyBatis二级缓存默认的清除策略是____。
+我的答案:LRU; 最近最少使用
+21. (填空题, 1.0 分) Spring 框架中，构成应用程序核心并由 IoC 容器管理的对象称为____。
+我的答案:Bean
+22. (填空题, 1.0 分) Spring 的配置元数据除 XML 方式外，还可以通过 ____ 方式定义。
+我的答案:注解
+23. (填空题, 1.0 分) Java EE 规范移交 Eclipse 基金会后，改名为____。
+我的答案:Jakarta EE
+24. (填空题, 1.0 分) Spring IoC 容器通过读取____来获取如何实例化、配置和组装 Bean 的指令。
+我的答案:配置元数据
+25. (填空题, 1.0 分) 在使用注解配置时，必须使用____注解来启用组件扫描。
+我的答案:@ComponentScan; ComponentScan
+26. (填空题, 1.0 分) Bean 完成依赖注入后，需要自动执行初始化回调方法时，可以使用 ____ 注解。
+我的答案:@PostConstruct
+27. (填空题, 1.0 分) Bean 销毁前需要自动执行资源清理方法时，可以使用 ____ 注解。
+我的答案:@PreDestroy
+28. (填空题, 1.0 分) MyBatis 二级缓存的 readOnly 属性设置为 false 时，返回的是缓存对象的 ____，而不是同一实例。
+我的答案:拷贝;复制对象
+29. (填空题, 1.0 分) MyBatis 二级缓存为生成缓存对象的拷贝，会使用 ____ 机制，因此相关实体对象需要支持序列化。
+我的答案:序列化和反序列化
+30. (填空题, 1.0 分) 在Spring中，如果希望组件扫描不仅仅局限于当前类所在包，可以通过在@ComponentScan注解中 配置特定属性来指定要扫描的基础包，例如@ComponentScan(____= "com.example.service")。
+我的答案:basePackages
+31. (填空题, 1.0 分) MyBatis 的 collection 元素中，用于指定集合元素 Java 类型的属性是 ____。
+我的答案:ofType
+32. (填空题, 1.0 分) MyBatis 的 association 元素中，用于指定关联对象 Java 类型的属性是 ____。
+我的答案:javaType
+33. (填空题, 1.0 分) Spring MVC 的核心前端控制器是 ____。
+我的答案:DispatcherServlet
+34. (填空题, 1.0 分) 在 MVC 模式中，负责封装业务数据和业务逻辑的组成部分是 ____。
+我的答案:Model
+35. (填空题, 1.0 分) 在 doDispatch 方法中，实际调用处理器方法的组件是 ____。
+我的答案:HandlerAdapter; 处理器适配器
+36. (填空题, 1.0 分) 在Spring MVC框架中，DispatcherServlet继承自____，并间接继承了HttpServlet。
+我的答案:FrameworkServlet
+37. (填空题, 1.0 分) 在Spring MVC中，负责将处理器返回的逻辑视图名(如”simple”)解析为具体视图对象(如 ”/WEB-INF/jsp/simple.jsp”)的组件是____。
+我的答案:ViewResolver;视图解析器
+38. (填空题, 1.0 分) MyBatis 通过 <properties> 加载外部属性文件后，在 XML 中应使用 ____ 形式引用其中的属性。
+我的答案:${属性名}
+39. (填空题, 1.0 分) MyBatis 加载映射文件时，会把 Mapper 的 namespace 与语句的 ____ 组合成映射语句的唯一标识。
+我的答案:id
+40. (填空题, 1.0 分) 在一个应用运行期间，适合创建一次并长期复用、用于生产数据库会话的对象是 ____。
+我的答案:SqlSessionFactory
+41. (填空题, 1.0 分) 为了在业务代码结束后自动释放数据库会话，可将 SqlSession 声明在 Java 的 ____ 语句中。
+我的答案:try-with-resources
+42. (填空题, 1.0 分) Mapper 方法返回 List<User> 时，映射语句的 resultType 应填写集合中的 ____ 类型，而不是 List 类型。
+我的答案:User
+43. (填空题, 1.0 分) 通过默认方式创建的 SqlSession 不会自动提交事务，新增或修改数据成功后应调用 ____ 方法提交。
+我的答案:commit()
+44. (填空题, 1.0 分) statementType 采用默认值 PREPARED 时，MyBatis 会使用 JDBC 的 ____ 执行预编译 SQL。
+我的答案:PreparedStatement
+45. (填空题, 1.0 分) 在映射文件中用 <sql id="columns"> 定义列清单后，应使用 ____ 元素把该片段引入具体语句。
+我的答案:include
+46. (填空题, 1.0 分) 在 Mapper SQL 中绑定用户输入的查询条件时，为使用预编译参数并降低 SQL 注入风险，通常应写 成 ____ 占位形式。
+我的答案:#{参数名}
+47. (填空题, 1.0 分) 在映射语句中，用于声明传入 SQL 的 Java 参数类型的属性是 ____。
+我的答案:parameterType
+48. (填空题, 1.0 分) 在 resultMap 中，把某个简单属性标记为对象标识、帮助缓存和嵌套结果映射识别对象的元素是 ____。
+我的答案:id
+49. (填空题, 1.0 分) 在 <association> 的嵌套 Select 配置中，用于指定从主查询结果取哪一列作为子查询参数的属性是 ____。
+我的答案:column
+50. (填空题, 1.0 分) 联表查询时，如果只需要两张表中连接条件能够匹配的记录，应使用 ____。
+我的答案:INNER JOIN
+51. (填空题, 1.0 分) 联表查询时，要保留左表全部人员，即使右表没有对应身份证记录，也应采用 ____。
+我的答案:LEFT JOIN
+52. (填空题, 1.0 分) 在关系数据库中，学生与课程这类多对多关系通常需要增加一张 ____ 保存双方的主键。
+我的答案:中间表（关联表）
+53. (填空题, 1.0 分) 在 MyBatis 的 <choose> 中，当所有 <when> 条件都不成立时，执行的默认分支元素是 ____。
+我的答案:otherwise
+54. (填空题, 1.0 分) 当 name 参数不为空时才拼接姓名查询条件，最适合使用 MyBatis 动态 SQL 的 ____ 元素。
+我的答案:if
+55. (填空题, 1.0 分) 多个查询条件只允许选择其中一个分支执行时，应使用 ____ 元素包裹各个 <when> 分支。
+我的答案:choose
+56. (填空题, 1.0 分) 在 <foreach> 中，用于定义各次循环生成片段之间连接文本的属性是 ____。
+我的答案:separator
+57. (填空题, 1.0 分) MyBatis 动态 SQL 的 <if test="..."> 条件通常使用 ____ 表达式进行求值。
+我的答案:OGNL
+58. (填空题, 1.0 分) 同一 SqlSession 执行新增、修改或删除操作后，原有一级缓存会被 ____，以避免继续读取旧数据。
+我的答案:清空
+59. (填空题, 1.0 分) 在同一 Mapper 命名空间内，要让不同 SqlSession 有机会共享查询结果，应使用 MyBatis 的 ____ 缓存。
+我的答案:二级
+60. (填空题, 1.0 分) 数据库数据已经更新时，及时清理旧缓存的主要目的是保证缓存数据与数据库的 ____。
+我的答案:一致性
+61. (填空题, 1.0 分) 在带 @Configuration 的配置类中，要把某个方法返回的对象注册为 Spring Bean，应在方法上添 加 ____ 注解。
+我的答案:@Bean
+62. (填空题, 1.0 分) 要让构造器一次接收容器中所有 Weapon 类型的 Bean，可把参数声明为 ____。
+我的答案:List<Weapon>
+63. (填空题, 1.0 分) 对于占用资源较多且不一定立即使用的 Bean，可添加 ____ 注解使其在首次使用时初始化。
+我的答案:@Lazy
+64. (填空题, 1.0 分) 若日志代码需要在目标方法执行之前运行，应在通知方法上使用 ____ 注解。
+我的答案:@Before
+65. (填空题, 1.0 分) 在基于注解的 Spring AOP 中，用于表明某个类是切面类的注解是 ____。
+我的答案:@Aspect
+66. (填空题, 1.0 分) DispatcherServlet 接收到请求后，负责根据请求信息查找对应处理器的组件是 ____。
+我的答案:HandlerMapping
+67. (填空题, 1.0 分) 在 Spring MVC 的 Java 配置类上，用于启用 MVC 注解驱动功能的注解是 ____。
+我的答案:@EnableWebMvc
+68. (编程填空, 1.0 分) 图书借阅系统使用 Spring 管理目录服务。请补全配置类声明、组件扫描和注解容器创建代码。
+ package org.example.library;
 
-A. B
-B. A
-C. C
-D. D
-我的答案:B
-2. (单选题, 1.5 分) 在进行某网上商店的用例图绘制时，(        )是一个不合适的用例。
-A. 购买商品
-B. 管理订单
-C. 搜索商品
-D. 打开页面
-我的答案:D
-3. (单选题, 1.5 分) 包含风险分析的软件工程模型是(        )。
-A. 螺旋模型
-B. 增量模型
-C. 喷泉模型
-D. 瀑布模型
-我的答案:A
-4. (单选题, 1.5 分) 软件工程中描述生命周期的瀑布模型一般包括计划、需求分析、设计、编码、(        )和维护等几个阶段。
-A. 产品发布
-B. 测试
-C. 可行性分析
-D. 版本更新
-我的答案:B
-5. (单选题, 1.5 分) 白盒测试技术依据的是(        )。
-A. 软件行为的描述
-B. 软件功能的描述
-C. 程序的逻辑结构
-D. 程序的物理结构
+ ____1____
+ ____2____(basePackages = "org.example.library.service")
+ public class LibraryConfig {
+     public static void main(String[] args) {
+         ApplicationContext context =
+                 new ____3____(LibraryConfig.class);
+         CatalogService service = context.getBean(CatalogService.class);
+         service.refresh();
+     }
+ }
+我的答案:空1：@Configuration；空2：@ComponentScan；空3：AnnotationConfigApplicationContext
+
+说明：配置类由 @Configuration 标识，@ComponentScan 指定扫描范围，AnnotationConfigApplicationContext 用于创建
+注解配置容器。
+69. (编程填空, 1.0 分) 消息中心需要把提示组件交给 Spring 管理，从配置中注入标题，并在依赖注入完成后执行初始化。请补
+全三个注解。
+ package org.example.notice;
+
+ ____1____
+ public class MessageBanner {
+     ____2____("${notice.title:课程通知}")
+     private String title;
+
+     ____3____
+     public void prepare() {
+         System.out.println(title + "已准备");
+     }
+ }
+我的答案:空1：@Component；空2：@Value；空3：@PostConstruct
+
+说明：@Component 注册组件，@Value 注入配置值，@PostConstruct 在依赖注入完成后执行初始化方法。
+70. (编程填空, 1.0 分) 报表模块采用纯注解配置。请补全配置类标识、容器实现类和按类型获取 Bean 的方法名。
+ ____1____
+ @ComponentScan("org.example.report")
+ class ReportConfig {
+ }
+
+ public class ReportLauncher {
+     public static void main(String[] args) {
+         ApplicationContext app =
+                 new ____2____(ReportConfig.class);
+         ReportService report = app.____3____(ReportService.class);
+         report.generate();
+     }
+ }
+我的答案:空1：@Configuration；空2：AnnotationConfigApplicationContext；空3：getBean
+
+说明：配置类驱动 AnnotationConfigApplicationContext，随后使用 getBean(Class) 按类型取得容器中的服务。
+71. (编程填空, 1.0 分) 文件备份服务依赖存储组件，并需要在容器关闭前释放资源。请补全组件注册、依赖注入和销毁回调注
+解。
+ package org.example.backup;
+
+ ____1____
+ public class BackupService {
+     ____2____
+     private FileStore fileStore;
+
+     ____3____
+     public void release() {
+         fileStore.close();
+     }
+ }
+我的答案:空1：@Service；空2：@Autowired；空3：@PreDestroy
+
+说明：@Service 将业务服务注册为 Bean，@Autowired 注入依赖，@PreDestroy 标记销毁前的清理方法。
+72. (编程填空, 1.0 分) 校园门禁模块需要由 Spring 管理状态记录器，注入系统名称，并在 Bean 初始化后输出启动信息。请补
+全三个注解。
+ package org.example.access;
+
+ ____1____
+ public class AccessRecorder {
+     ____2____("校园门禁")
+     private String systemName;
+
+     ____3____
+     public void ready() {
+         System.out.println(systemName + "记录器已启动");
+     }
+ }
+我的答案:空1：@Component；空2：@Value；空3：@PostConstruct
+
+说明：三个空依次完成组件注册、字面量注入和初始化回调声明。
+73. (编程填空, 1.0 分) 客服系统采用 Java 配置，要求扫描 org.example.support 包。请补全配置类注解、扫描注解和用于指
+定基础包的属性名。
+ ____1____
+ ____2____(____3____ = "org.example.support")
+ public class SupportConfig {
+ }
+我的答案:空1：@Configuration；空2：@ComponentScan；空3：basePackages
+
+说明：@Configuration 声明配置类，@ComponentScan 启动扫描，basePackages 明确扫描的基础包。
+74. (编程填空, 1.0 分) CourseMapper.xml 需要按可选名称筛选课程，并根据课程编号集合执行 IN 查询。请补全三个动态
+SQL 要素。
+ <select id="findCourses" resultType="course">
+   SELECT * FROM course
+   <____1____>
+     <____2____ test="name != null and name != ''">
+       name LIKE CONCAT('%', #{name}, '%')
+
+     </____2____>
+   </____1____>
+ </select>
+
+ <select id="findByIds" resultType="course">
+   SELECT * FROM course WHERE id IN
+   <foreach collection="____3____" item="courseId"
+            open="(" separator="," close=")">
+     #{courseId}
+   </foreach>
+ </select>
+我的答案:空1：where；空2：if；空3：list
+
+说明：where 负责条件边界，if 决定是否拼接名称条件，list 是单个 List 参数的常用默认集合名。
+75. (编程填空, 1.0 分) EmployeeMapper.xml 使用联表结果映射装配员工及其所属部门。请补全结果映射根元素、单对象关联
+元素和关联对象类型属性。
+ <____1____ id="EmployeeMap" type="employee">
+   <id property="id" column="emp_id"/>
+   <result property="name" column="emp_name"/>
+   <____2____ property="department" ____3____="department">
+     <id property="id" column="dept_id"/>
+     <result property="name" column="dept_name"/>
+   </____2____>
+ </____1____>
+我的答案:空1：resultMap；空2：association；空3：javaType
+
+说明：resultMap 定义整体映射，association 处理单个部门对象，javaType 指定其 Java 类型。
+76. (编程填空, 1.0 分) BookMapper.xml 插入图书后需要把数据库生成的编号写回 Book.id。请补全参数类型、自增主键开关
+和回填属性。
+ <insert id="addBook"
+         ____1____="book"
+         ____2____="true"
+         ____3____="id">
+   INSERT INTO book(title, price)
+   VALUES(#{title}, #{price})
+ </insert>
+我的答案:空1：parameterType；空2：useGeneratedKeys；空3：keyProperty
+
+说明：parameterType 描述输入对象，useGeneratedKeys 启用 JDBC 主键获取，keyProperty 指定回填到 id。
+77. (编程填空, 1.0 分) AuthorMapper.xml 通过嵌套查询加载作者的文章列表。请补全集合映射元素、集合元素类型属性和引
+用子查询的属性。
+ <resultMap id="AuthorMap" type="author">
+   <id property="id" column="author_id"/>
+   <result property="name" column="author_name"/>
+   <____1____ property="articles" column="author_id"
+                ____2____="article"
+                ____3____="org.example.ArticleMapper.findByAuthorId"/>
+ </resultMap>
+我的答案:空1：collection；空2：ofType；空3：select
+
+说明：collection 映射集合属性，ofType 指定单个文章类型，select 指向加载文章的映射语句。
+78. (单选题, 1.0 分) 在Spring AOP中，织入(Weaving)通常发生在哪个阶段?( )
+A. 编译期
+B. 类加载期
+C. 运行期
+D. 编码期
 我的答案:C
-6. (单选题, 1.5 分) 包含关系是在(        )的基础上通过添加构造型实现的。
-A. 依赖关系
-B. 泛化关系
-C. 关联关系
-D. 扩展关系
+79. (单选题, 1.0 分) 以下哪种通知类型在目标方法被调用之前执行?( )
+A. 前置通知(Before)
+B. 后置通知(After)
+C. 返回通知(After-returning)
+D. 环绕通知(Around)
 我的答案:A
-7. (单选题, 1.5 分) 以下对于喷泉模型的说法正确的是(        )。
-A. 审核简单
-B. 不需要大量的开发人员
-C. 需要分析结束后才开始设计
-D. 开发人员可以同步开发
-我的答案:D
-8. (单选题, 1.5 分) 活动图中可能出现的终止标记的数量是(        )。
-A. 0到多个
-B. 0个
-C. 1个
-D. 0或1个
-我的答案:D
-9. (单选题, 1.5 分) 顺序图的组成不包括(        )。
-A. 分叉节点
-B. 对象
-C. 生命线
-D. 消息
-我的答案:A
-10. (单选题, 1.5 分) 在下列选项中，(        )不属于软件工程学科所要研究的基本内容。
-A. 软件工程原理
-B. 软件工程材料
-C. 软件工程过程
-D. 软件工程方法
+80. (单选题, 1.0 分) 在基于注解的AOP实现中，使用哪个注解来定义切面?( )
+A. @Component
+B. @Aspect
+C. @Pointcut
+D. @EnableAspectJAutoProxy
 我的答案:B
-11. (单选题, 1.5 分) 软件危机的主要原因是(        )。
-A. 软件工具落后
-B. 软件本身的特点及开发方法不满足
-C. 实行严格的产品控制
-D. 软件生产能力不足
-我的答案:B
-12. (单选题, 1.5 分) 螺旋模型综合了(        )的优点，并增加了风险分析。
-A. 增量模型和喷泉模型
-B. 瀑布模型和喷泉模型
-C. 瀑布模型和快速原型模型
-D. 快速原型模型和喷泉模型
+81. (单选题, 1.0 分) 在Spring AOP中，如果要启用自动代理功能，需要在配置类上使用哪个注解?( )
+A. @Configuration
+B. @ComponentScan
+C. @EnableAspectJAutoProxy
+D. @Aspect
 我的答案:C
-13. (单选题, 1.5 分) 下列关于用例图的描述，错误的是(        )。
-A. 用例在用例图中使用椭圆表示
-B. 参与者在用例图中使用小人表示
-C. 用例图表示系统的行为
-D. 一般使用从用例指向参与者的箭头表示关联关系
-我的答案:D
-14. (单选题, 1.5 分) 软件开发的瀑布模型一般都将开发过程划分为分析、设计、编码和测试等阶段，一般认为可能占用人员最多的阶段是(        )。
-A. 设计阶段
-B. 分析阶段
-C. 编码阶段
-D. 测试阶段
+82. (单选题, 1.0 分) 在JDK动态代理示例中，代理处理器需要实现哪个接口?( )
+A. InvocationHandler
+B. Proxy
+C. MethodInterceptor
+D. Aspect
+我的答案:A
+83. (单选题, 1.0 分) 数据持久化的主要目的是( )
+A. 提高程序运行速度
+B. 将数据保存到磁盘以避免丢失
+C. 减少内存使用
+D. 简化代码编写
+我的答案:B
+84. (单选题, 1.0 分) 在MyBatis中，ORM的全称是( )
+A. Object-Record Mapping
+B. Object-Relational Mapping
+C. Object-Resource Mapping
+D. Object-Reference Mapping
+我的答案:B
+85. (单选题, 1.0 分) 在MyBatis配置中，用于读取外部配置文件的元素是( )
+A. settings
+B. properties
+C. typeAliases
+D. environments
+我的答案:B
+86. (单选题, 1.0 分) 以下哪个设置可以开启驼峰命名自动映射( )
+A. useCamelCaseMapping
+B. mapUnderscoreToCamelCase
+C. autoMapping
+D. camelCaseEnabled
+我的答案:B
+87. (单选题, 1.0 分) 关于MyBatis工作原理，说法错误的是( )
+A. Mapper接口的实现类由MyBatis动态生成
+B. SqlSession是线程安全的
+C. MyBatis通过命名空间和方法名绑定SQL
+D. 结果集映射到Java对象是自动的
+我的答案:B
+88. (单选题, 1.0 分) 在 MyBatis 映射文件中，描述如何从数据库结果集中加载对象的元素是( )
+A. cache
+B. resultMap
+C. sql
+D. select
+我的答案:B
+89. (单选题, 1.0 分) MyBatis 默认不会自动提交 SQL 操作，必须调用哪一方法才能永久生效( )
+A. session.save()
+B. session.commit()
+C. mapper.commit()
+D. sqlSessionFactory.commit()
+我的答案:B
+90. (单选题, 1.0 分) 在 insert 语句中启用自动生成主键的配置是( )
+A. autoKey="true"
+B. useGeneratedKeys="true"
+C. idAuto="true"
+D. key="auto"
+我的答案:B
+91. (单选题, 1.0 分) 关于 resultMap 的作用，下列哪项描述正确( )
+A. 定义 SQL 语句
+B. 定义列与对象属性的映射规则
+C. 定义事务边界
+D. 定义缓存策略
+我的答案:B
+92. (单选题, 1.0 分) 动态 SQL 中，用于在不同条件中选择其一执行的元素是( )
+A. if
+B. choose
+C. where
+D. foreach
+我的答案:B
+93. (单选题, 1.0 分) 在 foreach 元素中，用于指定循环开始符号的属性是( )
+A. prefix
+B. open
+C. begin
+D. start
+我的答案:B
+94. (单选题, 1.0 分) MyBatis 中，用于指定 SQL 语句返回结果映射规则的元素是?
+A. <parameterType>
+B. <resultType>
+C. <resultMap>
+D. <parameterMap>
 我的答案:C
-15. (单选题, 1.5 分) 假设类A的一个操作的其中一个参数是类B的一个对象，且这两个类之间不存在其他关系，那么类A和类B之间构成(        )。
-A. 泛化关系
-B. 依赖关系
-C. 关联关系
-D. 实现关系
+95. (单选题, 1.0 分) MyBatis 中，若要实现批量更新操作，推荐结合下列哪个标签?
+A. <if>
+B. <foreach>
+C. <choose>
+D. <set>
 我的答案:B
-16. (单选题, 1.5 分) UML主要应用于(        )。
-A. 基于螺旋模型的结构化开发方法
-B. 基于对象的面向对象的方法
-C. 基于数据的数据流开发方法
-D. 基于需求动态定义的原型化方法
+96. (单选题, 1.0 分) MyBatis 中，配置数据库连接信息的核心配置文件节点是?
+A. <mappers>
+B. <typeAliases>
+C. <environments>
+D. <settings>
+我的答案:C
+97. (单选题, 1.0 分) MyBatis 中，用于动态生成 UPDATE 语句中 SET 子句的元素是?
+A. <where>
+B. <set>
+C. <trim>
+D. <if>
 我的答案:B
-17. (单选题, 1.5 分) 下列关于链的叙述中，正确的一项是(        )。
-A. 链使用一根虚线段来表示
-B. 链用来表示对象和类之间的关系
-C. 链没有多重性
-D. 链就是关联关系
+98. (单选题, 1.0 分) MyBatis 中，配置类型别名的核心配置文件节点是?
+A. <environments>
+B. <typeAliases>
+C. <mappers>
+D. <settings>
+我的答案:B
+99. (单选题, 1.0 分) 关于MyBatis一级缓存，说法错误的是?
+A. 一级缓存是会话级缓存
+B. 默认情况下启用
+C. 在同一个SqlSession中有效
+D. 跨多个SqlSession共享
 我的答案:D
-18. (单选题, 1.5 分) 我们可以使用UML中的(        )来描述图书馆与书的关系。
-A. 关联关系
-B. 依赖关系
-C. 实现关系
-D. 泛化关系
+100. (单选题, 1.0 分) 在MySQL中，默认的JOIN类型是?
+A. CROSS JOIN
+B. INNER JOIN
+C. LEFT JOIN
+D. RIGHT JOIN
+我的答案:B
+101. (单选题, 1.0 分) 关于MyBatis的<association>元素，说法正确的是?
+A. 用于处理一对多关系
+B. 只能使用嵌套Select查询
+C. 属性javaType指定关联的Java类型
+D. 属性ofType指定集合中元素的类型
+我的答案:C
+102. (单选题, 1.0 分) 关于 Java EE 的说法，正确的是?
+A. Java EE 是 Java 的基础平台
+B. Java EE 现在正式名称为 Jakarta EE
+C. Java EE 只包含 Servlet 规范
+D. Java EE 不需要应用服务器即可运行
+我的答案:B
+103. (单选题, 1.0 分) Spring Framework 的设计理念不包括以下哪一项?
+A. 提供多种选择
+B. 强制唯一开发方式
+C. 保持向后兼容
+D. 注重 API 设计
+我的答案:B
+104. (单选题, 1.0 分) 依赖注入(DI)的实现方式不包括?
+A. 构造函数参数
+B. 工厂方法参数
+C. setter 方法
+D. 直接 new 对象
+我的答案:D
+105. (单选题, 1.0 分) Spring 中由 IoC 容器管理的对象称为?
+A. Component
+B. Bean
+C. Object
+D. Entity
+我的答案:B
+106. (单选题, 1.0 分) 以下哪项不是使用 IoC 容器带来的好处?
+A. 降低代码耦合度
+B. 便于单元测试
+C. 代码更干净易读
+D. 提高编译速度
+我的答案:D
+107. (单选题, 1.0 分) 在 Spring 配置文件中，用于定义 Bean 属性值的元素是?
+A. <constructor-arg>
+B. <property>
+C. <value>
+D. <bean>
+我的答案:B
+108. (单选题, 1.0 分) 关于 Spring IoC 容器，下列说法正确的是?
+A. 容器通过读取数据库配置来管理 Bean
+B. ApplicationContext 是 Spring IoC 容器的核心接口
+C. 配置元数据只能通过 XML 方式定义
+D. 基于注解的配置方式已被淘汰
+我的答案:B
+109. (单选题, 1.0 分) 在使用注解配置时，要使 @Component 生效，必须同时使用哪个注解?
+A. @Autowired
+B. @Configuration
+C. @ComponentScan
+D. @Value
+我的答案:C
+110. (单选题, 1.0 分) Spring Bean 的默认作用域是?
+A. prototype
+B. singleton
+C. request
+D. session
+我的答案:B
+111. (单选题, 1.0 分) 关于 @Lazy 注解，下列说法正确的是?
+A. 用于延迟 Bean 的初始化
+B. 只能用于单例 Bean
+C. 会阻止 Bean 的创建
+D. 用于加速应用启动
 我的答案:A
-19. (单选题, 1.5 分) 软件工程的三要素是(        )。
-A. 方法、工具和过程
-B. 技术、方法和工具
-C. 方法、对象和类
-D. 过程、模型和方法
+112. (单选题, 1.0 分) 关于 Servlet API 及其来源，下列说法中正确的是哪一项?
+A. Servlet API 是 Spring 框架的一部分，用于处理 HTTP 请求。
+B. Servlet API 属于 Java SE 标准库，由 JVM 直接提供。
+C. Servlet API 是 Java EE(现 Jakarta EE)规范的一部分，由 Tomcat、Jetty 等 Web 容器负责实现。
+D. Servlet API 是一种前端框架，用于生成动态网页内容。
+我的答案:C
+113. (单选题, 1.0 分) 采用 MVC 模式进行软件开发的主要优势之一是?
+A. 自动提升应用程序的运行性能和响应速度
+B. 实现职责分离，使代码结构清晰，易于维护
+C. 减少代码行数，使程序更加简洁和轻量
+D. 消除所有类型的技术债务和长期维护成本
+我的答案:B
+114. (单选题, 1.0 分) 在普通 Servlet 工作流程中，如果用户发起一个 POST 请求，最终会调用哪个方法?
+A. service
+B. doGet
+C. doPost
+D. processRequest
+我的答案:C
+115. (单选题, 1.0 分) 在 DispatcherServlet 工作流程中，如果用户发起一个 GET 请求，最终会调用哪个方法?
+A. service
+B. doGet
+C. doDispatch
+D. processRequest
+我的答案:C
+116. (单选题, 1.0 分) 关于 Spring MVC 完整的请求处理流程，以下哪项描述最准确?
+A. 请求→DispatcherServlet→HandlerMapping→HandlerAdapter→Controller→视图渲染→响应
+B. 请求→HandlerMapping→DispatcherServlet→Controller→HandlerAdapter→视图渲染→响应
+C. 请求→DispatcherServlet→HandlerAdapter→HandlerMapping→Controller→视图渲染→响应
+D. 请求→Controller→DispatcherServlet→HandlerMapping→HandlerAdapter→视图渲染→响应
 我的答案:A
-20. (单选题, 1.5 分) 下列对类和接口的描述不正确的是(        )。
-A. 当一个类拥有另外一个类的全部属性和方法时，它们之间是实现关系
-B. 一个类可以实现多个接口
-C. 接口的方法名必须是公开(public)的
-D. 当使用子类去替换一处父类时，设计良好的软件应当可以正确实现功能
-我的答案:A
-二. 填空题（共 10 题，10.0 分）
-21. (填空题, 1.0 分)
-在软件工程中，面向对象方法的具体实施步骤包括______、面向对象设计、面向对象实现和______。
-
-我的答案：
-(1) 
-面向对象分析、面向对象测试
-
-(2) 
-22. (填空题, 1.0 分) 顺序图由四部分组成:_______、生命线、激活期与消息。
-我的答案：
-(1) 
-对象
-
-23. (填空题, 1.0 分) 把输入划分为有效和无效组别来设计用例的方法叫______。
-我的答案：
-(1) 
-等价类划分法
-
-24. (填空题, 1.0 分) 结构化分析方法常用的两种工具是______和数据字典。
-我的答案：
-(1) 
-数据流图
-
-25. (填空题, 1.0 分) 活动图中泳道用来标识活动的______。
-我的答案：
-(1) 
-执行者或对象
-
-26. (填空题, 1.0 分) 在可行性研究中，______是最关键的因素。
-我的答案：
-(1) 
-经济可行性
-
-27. (填空题, 1.0 分) 对象图的组成元素包括对象和__________。
-我的答案：
-(1) 
-链
-
-28. (填空题, 1.0 分) 通过执行对象的操作改变对象的属性，但它必须通过________的传递。
-我的答案：
-(1) 
-参数
-
-29. (填空题, 1.0 分) 描述对象从一种状态切换至另一种状态的UML图是______。
-我的答案：
-(1) 
-状态图
-
-30. (填空题, 1.0 分) 依据代码内部逻辑设计用例的测试类型是______测试。
-我的答案：
-(1) 
-白盒
-
-三. 判断题（共 10 题，10.0 分）
-31. (判断题, 1.0 分) 软件危机的主要表现是软件需求增加，软件价格上升。(        )
-A. 对
-B. 错
-我的答案:对
-32. (判断题, 1.0 分) 用例的包含关系与扩展关系在表示法上相似，都是将虚线箭头从基用例指向包含用例(扩展用例)。(        )
-A. 对
-B. 错
+117. (单选题, 1.0 分) 在传统 Servlet 开发中，如何注册和映射 Servlet?
+A. 使用 @Controller 注解
+B. 在 web.xml 中配置 servlet 和 servlet-mapping
+C. 在代码中直接调用 Servlet API
+D. 使用 Spring 配置类
+我的答案:B
+118. (单选题, 1.0 分) Spring MVC 中，@Controller 注解的作用是什么?
+A. 定义 Servlet 类
+B. 标记该类为控制器，由 Spring 管理
+C. 配置视图解析规则
+D. 处理 HTTP 请求的具体业务逻辑
+我的答案:B
+119. (单选题, 1.0 分) 在 MVC 模式中，Controller 的主要职责是什么?
+A. 封装业务数据和业务逻辑
+B. 负责用户界面的渲染和展示
+C. 接收用户请求，调用 Model 处理业务，选择 View 返回响应
+D. 管理数据库连接和事务
+我的答案:C
+120. (单选题, 1.0 分) 在Spring MVC框架中，负责统一接收并分发所有HTTP请求的核心前端控制器是
+A. SimpleServlet
+B. HttpServlet
+C. DispatcherServlet
+D. HandlerAdapter
+我的答案:C
+121. (单选题, 1.0 分) 在Spring MVC中，用于标识一个类是Web控制器的注解是
+A. @Service
+B. @Repository
+C. @Component
+D. @Controller
+我的答案:D
+122. (单选题, 1.0 分) HandlerMapping在为请求寻找匹配的处理器时，通常不会依据以下哪一项进行匹配
+A. 请求URL路径
+B. 请求参数(Params)
+C. 请求头的Accept内容
+D. 服务器主机的IP地址
+我的答案:D
+123. (单选题, 1.0 分) 相比于传统的Servlet开发，Spring MVC框架的一个主要优势是
+A. 完全无需任何配置即可运行
+B. 不再基于Servlet API，性能更高
+C. 提供了更完善的请求分发、处理器映射、数据绑定和视图解析等机制，简化开发
+D. 强制使用JSP作为唯一视图技术
+我的答案:C
+124. (多选题, 1.0 分) 关于Spring AOP的通知类型，以下说法正确的有?( )
+A. @Before通知在目标方法执行前执行
+B. @After通知在目标方法正常返回后执行
+C. @Around通知可以控制目标方法的执行
+D. @AfterThrowing通知在目标方法抛出异常时执行
+我的答案:ACD
+125. (多选题, 1.0 分) 关于AOP中的基本概念，以下正确的有?( )
+A. 连接点是程序执行过程中的特定节点
+B. 切入点是实际织入通知的连接点
+C. 通知定义了切面的具体行为和执行时机
+D. 切面由通知和连接点组成
+我的答案:ABC
+126. (多选题, 1.0 分) 在基于注解的AOP配置中，以下哪些注解是必需的?( )
+A. @Aspect
+B. @Pointcut
+C. @EnableAspectJAutoProxy
+D. @Component
+我的答案:ACD
+127. (多选题, 1.0 分) 在MyBatis中，以下哪些元素可以在核心配置文件中配置?
+A. properties
+B. settings
+C. typeAliases
+D. mappers
+我的答案:ABCD
+128. (多选题, 1.0 分) 关于 where 元素的特性，以下描述正确的是( )
+A. 仅当子元素有内容时才生成 WHERE 子句
+B. 会自动去除首个 AND 或 OR
+C. 与 trim(prefix="WHERE") 等价
+D. 必须和 if 联合使用
+我的答案:ABC
+129. (多选题, 1.0 分) 关于动态 SQL 的 foreach 元素，以下说法正确的是( )
+A. 常用于构建 IN 语句
+B. 可遍历 List 或数组
+C. 使用 close 属性定义结束符
+D. 只能用于 insert 语句
+我的答案:ABC
+130. (多选题, 1.0 分) 关于 MyBatis 一级缓存，下列说法正确的有?
+A. 同一个 SqlSession 中多次执行相同 SQL 会使用缓存
+B. 执行插入操作会清空一级缓存
+C. 一级缓存是线程安全的
+D. 一级缓存可跨多个 SqlSession 共享
+我的答案:AB
+131. (多选题, 1.0 分) 关于 MyBatis 的动态 SQL 标签，下列属于常用标签的有?
+A. <if>
+B. <foreach>
+C. <set>
+D. <association>
+我的答案:ABC
+132. (多选题, 1.0 分) 关于 MyBatis 的 SqlSession，下列说法正确的有?
+A. SqlSession 由 SqlSessionFactory 创建
+B. SqlSession 是 MyBatis 与数据库交互的核心
+C. SqlSession 使用完毕后必须关闭
+D. 多个线程可共享同一个 SqlSession
+我的答案:ABC
+133. (多选题, 1.0 分) 关于MyBatis二级缓存的配置属性，以下哪些是可用的?
+A. eviction
+B. flushInterval
+C. size
+D. readOnly
+我的答案:ABCD
+134. (多选题, 1.0 分) 关于 Spring Framework 的核心技术，以下哪些说法正确?
+A. IoC 容器是 Spring 的核心
+B. AOP 是 Spring 的核心技术之一
+C. Spring 强制使用 XML 配置
+D. Spring 只支持 Java EE 应用
+我的答案:AB
+135. (多选题, 1.0 分) 以下哪些是依赖注入的常见方式?
+A. 构造函数注入
+B. setter 方法注入
+C. 工厂方法注入
+D. 直接赋值注入
+我的答案:ABC
+136. (多选题, 1.0 分) 以下哪些是 Spring 支持的依赖注入方式?
+A. 构造方法注入
+B. 字段注入
+C. 方法注入
+D. 接口注入
+我的答案:ABC
+137. (多选题, 1.0 分) 关于 Bean 的作用域，以下哪些说法正确?
+A. singleton 是默认作用域
+B. prototype 每次获取都会创建新实例
+C. request 作用域适用于 Web 应用
+D. session 作用域的 Bean 在会话间共享
+我的答案:ABC
+138. (多选题, 1.0 分) 在MyBatis处理多对多关系时，以下哪些设计能提升性能?
+A. 使用嵌套结果映射替代嵌套Select查询
+B. 在中间表的关联字段上创建索引
+C. 为所有关联查询开启二级缓存
+D. 使用<discriminator>根据类型映射不同结果
+我的答案:ABC
+139. (多选题, 1.0 分) 关于 MVC 模式，以下哪些说法正确?
+A. Model 负责封装业务数据和业务逻辑
+B. View 只负责展示数据，不处理业务逻辑
+C. Controller 作为 Model 和 View 的桥梁，协调请求处理
+D. Model 和 View 应该直接交互以提高效率
+我的答案:ABC
+140. (多选题, 1.0 分) 采用 MVC 模式的好处包括哪些?
+A. 职责分离，代码清晰
+B. 提高代码复用性
+C. 便于单元测试
+D. 自动提升应用程序性能
+我的答案:ABC
+141. (多选题, 1.0 分) 关于 Spring MVC 配置，以下哪些是常见的必要步骤?
+A. 引入 DispatcherServlet 并配置映射
+B. 配置 Spring 配置文件，包括组件扫描和注解驱动
+C. 配置视图解析器 ViewResolver
+D. 直接编写 Servlet 代码处理所有请求
+我的答案:ABC
+142. (多选题, 1.0 分) 在Spring MVC的请求处理流程中，FrameworkServlet的processRequest方法最终可能会将请求导 向哪些路径?
+A. 调用父类HttpServlet的service方法
+B. 直接调用HandlerMapping
+C. 调用DispatcherServlet的doService方法
+D. 直接生成响应并返回
+我的答案:AC
+143. (多选题, 1.0 分) 在MVC模式中，以下哪些职责通常属于Model层的范畴?
+A. 封装核心业务数据
+B. 实现核心业务逻辑
+C. 决定使用哪个视图进行展示
+D. 负责生成最终的HTML页面
+我的答案:AB
+144. (多选题, 1.0 分) 开发者把数据库连接信息移入 db.properties，并准备按包注册实体别名和 Mapper。对这组配置的 判断正确的有（ ）。
+A. <properties resource="db.properties"/> 可加载类路径中的属性文件
+B. 加载后的属性可通过 ${属性名} 形式引用
+C. 使用 <mappers><package .../></mappers> 扫描时，Mapper 接口与 XML 需要满足对应的包路径和命名约 定
+D. 配置类型别名后，Java 类型原有的全限定类名将失效
+我的答案:ABC
+145. (多选题, 1.0 分) 查询结果列名与 Java 属性名不完全一致时，下列处理方式正确的有（ ）。
+A. 可在 SQL 中使用列别名使列名与属性名一致
+B. 可使用 resultMap 显式定义 column 到 property 的映射
+C. <id> 标记对象标识，有助于缓存和嵌套结果映射
+D. 使用 resultMap 后，每个同名属性也必须显式写出 <result> 才能赋值
+我的答案:ABC
+146. (多选题, 1.0 分) 一个 <choose> 中依次配置了多个 <when> 和一个 <otherwise>。下列说法正确的有（ ）。
+A. 按书写顺序判断 <when> 条件
+B. 第一个满足条件的 <when> 被采用后，不再采用后续分支
+C. 所有条件为真的 <when> 都会同时拼接到 SQL
+D. <otherwise> 与多个相互独立的 <if> 具有完全相同的行为
+我的答案:AB
+147. (多选题, 1.0 分) 对 ids=[2,5] 执行下列片段时，相关判断正确的有（ ）。
+A. 循环体会生成两段 id = ?
+B. 两段条件之间使用 OR 连接
+C. 整体结果两侧会添加圆括号
+D. item 必须与数据库表的主键列名相同
+我的答案:ABC
+148. (多选题, 1.0 分) 关于 Spring 注解方式的依赖注入，下列说法正确的有（ ）。
+A. 类只有一个构造器时，Spring 可使用该构造器完成注入
+B. List<Weapon> 参数可接收容器中所有匹配 Weapon 类型的 Bean
+C. 带 @Autowired 的 setter 方法可用于方法注入
+D. 对象在方法内部自行 new 出依赖对象属于容器依赖注入
+我的答案:ABC
+149. (多选题, 1.0 分) 关于注解方式配置切点，下列说法正确的有（ ）。
+A. @Pointcut 可为切点表达式定义可复用的名称
+B. execution(...) 可按类、方法和参数模式匹配目标方法
+C. @annotation(demo.ssm.CalTime) 可匹配标有指定注解的方法
+D. 切点方法必须在方法体内编写实际业务逻辑
+我的答案:ABC
+150. (判断题, 1.0 分) AOP可以完全替代OOP成为主要的编程范式。
 我的答案:错
-33. (判断题, 1.0 分) 参与者位于系统边界外，并不是系统的一部分。(        )
-A. 对
-B. 错
+151. (判断题, 1.0 分) 在Spring AOP中，一个切面可以包含多个通知方法。
 我的答案:对
-34. (判断题, 1.0 分) 黑盒测试只检查程序功能是否按照需求规格说明书的规定正常使用，程序是否能适当地接收输入数据而产生正确的输出信息，而不考虑模块的内部执行与程序结构。(        )
-A. 对
-B. 错
+152. (判断题, 1.0 分) CGLib动态代理可以代理没有实现接口的类。
 我的答案:对
-35. (判断题, 1.0 分) 类图可被看作是对象图的实例。(        )
-A. 对
-B. 错
+153. (判断题, 1.0 分) @After通知无论目标方法是否抛出异常都会执行。
 我的答案:对
-36. (判断题, 1.0 分) 在绘制用例图时，其中用例的粒度越细越好。(        )
-A. 对
-B. 错
+154. (判断题, 1.0 分) 在MyBatis中，类型别名只能通过逐个定义的方式配置。
 我的答案:错
-37. (判断题, 1.0 分) 在UML中，当接口使用小圆圈表示时，该接口与其他类的实现关系可以被简化为一条实线段。(        )
-A. 对
-B. 错
+155. (判断题, 1.0 分) MyBatis 默认会自动提交事务。
 我的答案:错
-38. (判断题, 1.0 分) UML用例图中的扩展关系在无扩展时基础用例依然完整。(        )
-A. 对
-B. 错
+156. (判断题, 1.0 分) resultMap 可解决列名与属性名不一致的问题。
 我的答案:对
-39. (判断题, 1.0 分) 软件的开发工作中，为了保证工作的进度，开发工作与测试工作应交给同一部分人完成。(        )
-A. 对
-B. 错
+157. (判断题, 1.0 分) where 元素在没有子条件时也会生成 WHERE 子句。
 我的答案:错
-40. (判断题, 1.0 分) 软件就是程序，编写软件就是编写程序。(        )
-A. 对
-B. 错
+158. (判断题, 1.0 分) foreach 元素只能用于构建 insert 语句。
 我的答案:错
-四. 简答题（共 4 题，20.0 分）
-41. (简答题, 5.0 分)
-什么是顺序图?顺序图有哪些组成部分?
+159. (判断题, 1.0 分) 一级缓存会在执行查询操作后自动清空。
+我的答案:错
+160. (判断题, 1.0 分) MyBatis 二级缓存需配置<cache/>标签才能启用。
+我的答案:对
+161. (判断题, 1.0 分) MySQL 中，未指定 JOIN 类型时，默认使用 LEFT JOIN。
+我的答案:错
+162. (判断题, 1.0 分) MyBatis 的<foreach>标签仅用于批量插入操作。
+我的答案:错
+163. (判断题, 1.0 分) MyBatis二级缓存默认要求实体类实现Serializable接口。
+我的答案:对
+164. (判断题, 1.0 分) LEFT JOIN会返回左表的所有记录，即使右表没有匹配。
+我的答案:对
+165. (判断题, 1.0 分) Spring 框架可以强制开发者使用唯一的开发方式。
+我的答案:错
+166. (判断题, 1.0 分) 依赖注入是控制反转的一种具体实现形式。
+我的答案:对
+167. (判断题, 1.0 分) Spring 的 IoC 容器可以降低代码的耦合度。
+我的答案:对
+168. (判断题, 1.0 分) 使用 Spring IoC 容器后，单元测试会变得更困难。
+我的答案:错
+169. (判断题, 1.0 分) @Component 的衍生注解包括 @Controller、@Service 和 @Repository。
+我的答案:对
+170. (判断题, 1.0 分) @Lazy 注解可以用于延迟 Bean 的初始化，加快应用启动时间。
+我的答案:对
+171. (判断题, 1.0 分) Spring 支持通过构造方法自动注入所有匹配类型的 Bean 到 List 中。
+我的答案:对
+172. (判断题, 1.0 分) DispatcherServlet 是 Spring MVC 的唯一入口。
+我的答案:对
+173. (判断题, 1.0 分) 在 Spring MVC 中，@GetMapping 注解用于处理 GET 请求。
+我的答案:对
+174. (判断题, 1.0 分) Spring MVC框架的实现完全独立于Servlet API，不依赖于任何Servlet容器。
+我的答案:错
+175. (判断题, 1.0 分) @RequestMapping注解既可以标注在类上，也可以标注在方法上，用于定义请求映射。
+我的答案:对
+176. (判断题, 1.0 分) Spring MVC中的HandlerAdapter存在的意义是为了让DispatcherServlet能够以统一的方式调用结 构各异的处理器(Handler)。
+我的答案:对
+177. (判断题, 1.0 分) 采用MVC模式能够自动提升应用程序的运行性能和响应速度。
+我的答案:错
+178. (判断题, 1.0 分) 两个不同 Mapper 命名空间可以各自声明一个 id="findById" 的映射语句，因为完整标识由 namespace 和 id 共同构成。
+我的答案:对
+179. (判断题, 1.0 分) Mapper 方法返回 List<User> 时，把 resultType 配置为 User 是合理的，MyBatis 会负责把多行 结果组织成集合。
+我的答案:对
+180. (判断题, 1.0 分) 使用 resultMap 后，未显式配置但列名与属性名一致的简单属性仍可能由自动映射完成赋值。
+我的答案:对
+181. (判断题, 1.0 分) 对 N 条主记录逐条执行嵌套 Select 加载关联对象时，通常只会执行一条 SQL，因为 MyBatis 会自 动把所有子查询合并。
+我的答案:错
+182. (判断题, 1.0 分) 在同一个 <choose> 中，即使多个 <when> 条件同时成立，也只采用按顺序遇到的第一个匹配分 支。
+我的答案:对
+183. (判断题, 1.0 分) 在同一个 SqlSession 中执行更新语句后，即使暂未调用 commit()，此前查询产生的一级缓存也会 被清理。
+我的答案:对
+184. (判断题, 1.0 分) 二级缓存设置 readOnly="true" 后，不同调用者可能获得同一个对象实例，因此调用者不应修改该 对象。
+我的答案:对
+185. (判断题, 1.0 分) 构造器参数为 List<Weapon> 时，只要容器中存在多个 Weapon Bean，Spring 就会因候选对象不 唯一而无法注入。
+我的答案:错
+186. (简答题, 1.0 分) 请简要说明AOP中"横切关注点"的含义，并举例说明。
+我的答案:1. 说明横切关注点的含义
 
-我的答案：
-顺序图是描述对象之间交互的UML图，组成部分包括对象、生命线、激活条和消息。
+  2. 举日志、事务或权限等例子
 
-42. (简答题, 5.0 分)
-与计算机硬件相比，计算机软件有哪些特点?
+  3. 说明 AOP 集中处理可减少重复和耦合
+187. (简答题, 1.0 分) 简述Spring AOP中JDK动态代理和CGLib动态代理的主要区别及适用场景。
+我的答案:1. JDK 动态代理基于接口
 
-我的答案：
-计算机软件具有无形性、逻辑性、可复制性、无磨损性等特点。
+  2. CGLIB 通过生成子类实现代理
 
-43. (简答题, 5.0 分)
-请简述软件工程的基本原则。
+  3. 比较使用前提、final 限制和适用场景
+188. (简答题, 1.0 分) 简述MyBatis的工作原理。
+我的答案:1. 加载配置并创建 SqlSessionFactory
 
-我的答案：
-抽象、分解、模块化、一致性、验证、生命周期管理、过程控制等原则。
+  2. 打开 SqlSession 并取得 Mapper
 
-44. (简答题, 5.0 分)
-简述传统软件生命周期的六个阶段。
+  3. 定位、执行 SQL 并映射结果
 
-我的答案：
-可行性研究、需求分析、设计、编码、测试、维护
+  4. 提交或回滚并关闭会话
+189. (简答题, 1.0 分) SqlSession是不是线程安全的?应该如何正确使用?
+我的答案:1. SqlSession 不是线程安全的
 
-五. 综合题（共 3 题，30.0 分）
-45. (综合题, 10.0 分)
-根据以下需求描述绘制类图。
-在“远程网络教学系统”系统中参与者为学生、教师和系统管理员:
-(1)学生包括登录名称、登录密码、学生编号、性别、年龄、班级、年级、邮箱等属性;
-(2)教师包括登录名称、登录密码、姓名、性别、教授课程、电话号码和邮箱等属性;
-(3)系统管理员包括用户名系统管理员登录名称、登录密码、邮箱、权限等级等属性。
-(4)把参与者学生、教师和系统管理员进行抽象，从而抽象出一个单独的人员类类，学生、教师和系统管理员分别是人员类的子类。
+  2. 一次请求或业务方法使用独立会话
 
-我的答案：
-人员类（登录名称、登录密码、邮箱）+ 学生类（学生编号、性别、年龄、班级、年级）+ 教师类（姓名、性别、教授课程、电话号码）+ 系统管理员类（权限等级）；人员类为父类，学生、教师、系统管理员为子类。
+  3. 按事务提交或回滚
 
-46. (综合题, 10.0 分)
-某学生选课系统的查询课程用例如下:学生首先进入选课系统，然后输入要查询的课程名，系统验证输入的课程名是否存在，若存在，则跳转到对应的显示课程信息的页面;若不存在，则给出提示信息，返回选课页面。请根据以上描述绘制活动图。
+  4. 使用后及时关闭
+190. (简答题, 1.0 分) 简述 MyBatis 中事务的作用及自动提交模式的弊端。
+我的答案:1. 事务保证一组操作整体成功或失败
 
-我的答案：
-开始→输入课程名→判断课程存在？→是→显示课程信息→结束；否→提示信息→返回选课页面
+  2. 正常时 commit，异常时 rollback
 
-47. (综合题, 10.0 分)
-某银行系统的取款用例执行顺序如下:
-工作人员输入取款单，输入后，银行系统请求银行数据库匹配用户，进行身份验证，验证通过后，数据库注销相应存款，返回注销完成信息，银行系统在存折上打印取款记录。请根据以上信息绘制顺序图。
+  3. 自动提交会破坏整体回滚并增加频繁提交开销
+191. (简答题, 1.0 分) 说明动态 SQL 中 if、choose、where、foreach 各自的作用。
+我的答案:1. if：按条件拼接 SQL
 
-我的答案：
-顺序图：工作人员→输入取款单→银行系统→请求身份验证→银行数据库→匹配用户→验证通过→注销存款→返回注销信息→银行系统→打印取款记录→存折
+  2. choose：从多个分支中选择一个
+
+  3. where：自动处理 WHERE 和开头的 AND/OR
+
+  4. foreach：遍历集合，常用于 IN
+192. (简答题, 1.0 分) 请简述 MyBatis 动态 SQL 的作用，并列举 3 种常用动态 SQL 标签及其功能。
+我的答案:1. 说明动态 SQL 可按参数生成不同语句
+
+  2. 任选至少三个常用标签
+
+  3. 分别写出标签作用和典型使用场景
+193. (简答题, 1.0 分) 请简述MyBatis中一级缓存和二级缓存的区别。
+我的答案:1. 一级缓存属于 SqlSession，通常默认开启
+
+  2. 二级缓存属于 Mapper 命名空间，需要配置
+
+  3. 比较作用域、生命周期、失效条件和序列化要求
+194. (简答题, 1.0 分) 请简述 Spring IoC 容器的作用及其带来的主要好处。
+我的答案:1. 容器负责创建和配置 Bean
+
+  2. 容器完成依赖注入并管理生命周期
+
+  3. 说明它能降低耦合、便于测试和维护
+195. (简答题, 1.0 分) 请简述 Spring IoC 容器中 Bean 的生命周期，包括主要阶段和对应的注解。
+我的答案:1. 实例化 Bean
+
+  2. 完成依赖注入
+
+  3. 执行 @PostConstruct 后投入使用
+
+  4. 销毁前执行 @PreDestroy，并说明 prototype 例外
+196. (简答题, 1.0 分) 请分别说明MyBatis中嵌套Select查询和嵌套结果映射的实现方式及各自的适用场景。
+我的答案:1. 说明嵌套 Select 的执行过程及 N+1 问题
+
+  2. 说明 JOIN 配合嵌套结果映射的过程
+
+  3. 比较查询次数、配置复杂度和适用场景
+197. (简答题, 1.0 分) 简述 Spring MVC 的工作流程，从请求到响应的主要步骤。
+我的答案:1. DispatcherServlet 接收请求
+
+  2. HandlerMapping 查找处理器
+
+  3. HandlerAdapter 调用 Controller
+
+  4. 处理 ModelAndView、ViewResolver 和结果渲染
