@@ -48,12 +48,17 @@
       fontSize: "15",
       fontWeight: "400",
       fontOpacity: "100",
+      customShortcutAI: "Alt+Z",
+      customShortcutLocal: "Alt+Q",
       customShortcut: "Alt+Z",
       enableSuperCopy: false
     }, (settings) => {
       config = settings;
-      if (!config.customShortcut || config.customShortcut.trim() === "") {
-        config.customShortcut = "Alt+Z";
+      if (!config.customShortcutAI || config.customShortcutAI.trim() === "") {
+        config.customShortcutAI = config.customShortcut || "Alt+Z";
+      }
+      if (!config.customShortcutLocal || config.customShortcutLocal.trim() === "") {
+        config.customShortcutLocal = "Alt+Q";
       }
       applyFontSettings();
       updateSuperCopyState();
@@ -82,8 +87,14 @@
         config.fontOpacity = changes.fontOpacity.newValue;
         applyFontSettings();
       }
+      if (changes.customShortcutAI) {
+        config.customShortcutAI = changes.customShortcutAI.newValue;
+      }
+      if (changes.customShortcutLocal) {
+        config.customShortcutLocal = changes.customShortcutLocal.newValue;
+      }
       if (changes.customShortcut) {
-        config.customShortcut = changes.customShortcut.newValue;
+        config.customShortcutAI = changes.customShortcut.newValue;
       }
       if (changes.enableSuperCopy) {
         config.enableSuperCopy = changes.enableSuperCopy.newValue;
@@ -308,7 +319,7 @@
     let lastTriggerTime = 0;
     
     // Helper to debounce and prevent overlapping triggers if local and background shortcuts fire simultaneously
-    function handleAIShow(text, x, y) {
+    function handleAIShow(text, x, y, mode = "both") {
       const now = Date.now();
       if (now - lastTriggerTime < 500) {
         console.log("AI Selection Helper: Ignored duplicate trigger.");
@@ -316,7 +327,7 @@
       }
       lastTriggerTime = now;
       showPanel(text, x, y);
-      triggerAI(text);
+      triggerAI(text, mode);
     }
 
     // Listen for messages from background script (Context menu trigger & keyboard shortcut)
@@ -332,13 +343,13 @@
           y = rect.bottom + 10;
         }
 
-        handleAIShow(msg.text, x, y);
+        handleAIShow(msg.text, x, y, "both");
         sendResponse({ success: true });
         return true;
       }
 
       // [Flow3 Fix] Handle keyboard shortcut trigger
-      if (msg.action === "TRIGGER_AI_FROM_SHORTCUT") {
+      if (msg.action === "TRIGGER_AI_FROM_SHORTCUT" || msg.action === "TRIGGER_LOCAL_SEARCH_FROM_SHORTCUT") {
         const selection = window.getSelection();
         const selectedText = selection.toString().trim();
         if (selectedText.length > 0) {
@@ -349,7 +360,8 @@
             x = rect.left;
             y = rect.bottom + 10;
           }
-          handleAIShow(selectedText, x, y);
+          const mode = msg.action === "TRIGGER_AI_FROM_SHORTCUT" ? "ai_only" : "local_only";
+          handleAIShow(selectedText, x, y, mode);
           sendResponse({ success: true });
         } else {
           showToast("请先选择网页文本");
@@ -369,7 +381,7 @@
         return;
       }
 
-      if (!config.customShortcut) return;
+      if (!config.customShortcutAI && !config.customShortcutLocal) return;
 
       // Skip if focused on input elements to avoid capturing regular typing
       const activeEl = document.activeElement;
@@ -382,7 +394,7 @@
       }
 
       const pressed = getShortcutString(e);
-      if (pressed === config.customShortcut) {
+      if (pressed && ((config.customShortcutAI && pressed === config.customShortcutAI) || (config.customShortcutLocal && pressed === config.customShortcutLocal))) {
         const selection = window.getSelection();
         const selectedText = selection.toString().trim();
         if (selectedText.length > 0) {
@@ -397,7 +409,8 @@
             y = rect.bottom + 10;
           }
 
-          handleAIShow(selectedText, x, y);
+          const mode = (config.customShortcutLocal && pressed === config.customShortcutLocal) ? "local_only" : "ai_only";
+          handleAIShow(selectedText, x, y, mode);
         }
       }
     }
@@ -679,7 +692,7 @@
   }
 
   // Connect to background script and trigger AI streaming
-  function triggerAI(text) {
+  function triggerAI(text, mode = "both") {
     // If there is an active stream, cancel it first
     if (activePort) {
       activePort.disconnect();
@@ -703,14 +716,25 @@
     let fullThinking = "";
     const answerBox = shadowRoot.querySelector(".ai-panel-answer");
 
-    // Check local question bank first
-    const localAnswer = findLocalAnswer(text);
-    if (localAnswer) {
-      isStreaming = false;
-      answerBox.innerHTML = "";
-      renderResponse(localAnswer, answerBox, "", false);
-      updateStatus("active", "本地命中");
-      return;
+    // Check local question bank if not in ai_only mode
+    if (mode !== "ai_only") {
+      const localAnswer = findLocalAnswer(text);
+      if (localAnswer) {
+        isStreaming = false;
+        answerBox.innerHTML = "";
+        renderResponse(localAnswer, answerBox, "", false);
+        updateStatus("active", "本地命中");
+        return;
+      }
+
+      // If local_only mode and not found, return "查无此题" immediately and do not connect to network
+      if (mode === "local_only") {
+        isStreaming = false;
+        answerBox.innerHTML = "";
+        renderResponse("查无此题", answerBox, "", false);
+        updateStatus("error", "未命中");
+        return;
+      }
     }
 
     // Establish connection to service worker
